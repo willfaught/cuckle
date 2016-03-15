@@ -1,0 +1,3 @@
+# syncql
+
+CQL syntax builder
