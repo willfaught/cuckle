@@ -1,3 +1,3 @@
-# syncql
+# cuckle
 
 CQL syntax builder
