@@ -248,24 +248,6 @@ func QueryTriggerDrop(keyspace, table, trigger Identifier, options ...Option) st
 	return strings.Join(q, " ")
 }
 
-func QueryTypeFieldAlter(keyspace, type_, field Identifier, data Type) string {
-	return fmt.Sprintf("alter type %v.%v alter %v type %v", keyspace, type_, field, data)
-}
-
-func QueryTypeFieldAdd(keyspace, type_, field Identifier, data Type) string {
-	return fmt.Sprintf("alter type %v.%v add %v %v", keyspace, type_, field, data)
-}
-
-func QueryTypeFieldRename(keyspace, type_, renames map[Identifier]Identifier) string {
-	var ss []string
-
-	for k, v := range renames {
-		ss = append(ss, fmt.Sprintf("%v to %v", k, v))
-	}
-
-	return fmt.Sprintf("alter type %v.%v rename %v", keyspace, type_, strings.Join(ss, " and "))
-}
-
 func QueryTypeCreate(keyspace, type_ Identifier, fields map[Identifier]Type, options ...Option) string {
 	var m = optionMap(options)
 	var q = []string{"create type"}
@@ -287,6 +269,24 @@ func QueryTypeCreate(keyspace, type_ Identifier, fields map[Identifier]Type, opt
 
 func QueryTypeDrop(keyspace, type_ Identifier, options ...Option) string {
 	return queryDrop("type", queryID(keyspace, type_), options)
+}
+
+func QueryTypeFieldAlter(keyspace, type_, field Identifier, data Type) string {
+	return fmt.Sprintf("alter type %v.%v alter %v type %v", keyspace, type_, field, data)
+}
+
+func QueryTypeFieldAdd(keyspace, type_, field Identifier, data Type) string {
+	return fmt.Sprintf("alter type %v.%v add %v %v", keyspace, type_, field, data)
+}
+
+func QueryTypeFieldRename(keyspace, type_, renames map[Identifier]Identifier) string {
+	var ss []string
+
+	for k, v := range renames {
+		ss = append(ss, fmt.Sprintf("%v to %v", k, v))
+	}
+
+	return fmt.Sprintf("alter type %v.%v rename %v", keyspace, type_, strings.Join(ss, " and "))
 }
 
 func optionGet(m map[string][]interface{}, name string) ([]interface{}, bool) {
