@@ -6,18 +6,20 @@ import (
 )
 
 const (
-	OptionAllowFiltering = "allow filtering"
-	OptionCalled         = "called"
-	OptionDistinct       = "distinct"
-	OptionIfExists       = "if exists"
-	OptionIfNotExists    = "if not exists"
-	OptionJSON           = "json"
-	OptionLimit          = "limit"
-	OptionOptions        = "options"
-	OptionOrderBy        = "order by"
-	OptionProperties     = "properties"
-	OptionReplace        = "replace"
-	OptionUsing          = "using"
+	OptionAllowFiltering  = "allow filtering"
+	OptionCalled          = "called"
+	OptionClusteringOrder = "clustering order"
+	OptionCompactStorage  = "compact storage"
+	OptionDistinct        = "distinct"
+	OptionIfExists        = "if exists"
+	OptionIfNotExists     = "if not exists"
+	OptionJSON            = "json"
+	OptionLimit           = "limit"
+	OptionOptions         = "options"
+	OptionOrderBy         = "order by"
+	OptionProperties      = "properties"
+	OptionReplace         = "replace"
+	OptionUsing           = "using"
 )
 
 const (
@@ -202,8 +204,57 @@ func QueryTableAlter() string {
 	return ""
 }
 
-func QueryTableCreate() string {
-	return ""
+func QueryTableCreate(keyspace, table Identifier, columns map[Identifier]Type, static map[Identifier]struct{}, partition, cluster []Identifier, options ...Option) string {
+	var m = optionMap(options)
+	var q = []string{"create table"}
+
+	if optionHas(m, OptionIfExists) {
+		q = append(q, "if not exists")
+	}
+
+	var ss []string
+
+	for i, t := range columns {
+		var s string
+
+		if _, ok := static[i]; ok {
+			s = "%v %v static"
+		} else {
+			s = "%v %v"
+		}
+
+		ss = append(ss, fmt.Sprintf(s, i, t))
+	}
+
+	var key = strings.Join(stringsFromIdentifiers(partition), ", ")
+
+	if len(cluster) > 0 {
+		key = fmt.Sprintf("(%v), %v", key, strings.Join(stringsFromIdentifiers(cluster), ", "))
+	}
+
+	ss = append(ss, fmt.Sprintf("primary key (%v)"), key)
+	q = append(q, fmt.Sprintf("%v.%v(%v)", keyspace, table, strings.Join(ss, ", ")))
+	ss = nil
+
+	if optionHas(m, OptionClusteringOrder) {
+		ss = append(ss, "clustering order")
+	}
+
+	if optionHas(m, OptionCompactStorage) {
+		ss = append(ss, "compact storage")
+	}
+
+	if vs, ok := m[OptionProperties]; ok {
+		for k, v := range vs[0].(map[Identifier]Term) {
+			ss = append(ss, fmt.Sprintf("%v = %v", k, v))
+		}
+	}
+
+	if len(ss) > 0 {
+		q = append(q, "with", strings.Join(ss, " and "))
+	}
+
+	return strings.Join(q, " ")
 }
 
 func QueryTableDrop(keyspace, table Identifier, options ...Option) string {
@@ -330,6 +381,16 @@ func queryFunc(keyspace, function Identifier, parameters []Type) string {
 
 func queryID(first, second Identifier) string {
 	return fmt.Sprintf("%v.%v", first, second)
+}
+
+func stringsFromIdentifiers(is []Identifier) []string {
+	var ss []string
+
+	for _, i := range is {
+		ss = append(ss, string(i))
+	}
+
+	return ss
 }
 
 func stringsFromTypes(ts []Type) []string {
