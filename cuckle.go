@@ -224,8 +224,16 @@ func QueryTableAlter(keyspace, table Identifier, options ...Option) string {
 	return strings.Join(q, " ")
 }
 
-func QueryTableColumnAlter() string {
-	return ""
+func QueryTableColumnAdd(keyspace, table, column Identifier, data Type) string {
+	return fmt.Sprintf("alter table %v.%v add %v %v", keyspace, table, column, data)
+}
+
+func QueryTableColumnAlter(keyspace, table, column Identifier, data Type) string {
+	return fmt.Sprintf("alter table %v.%v alter %v type %v", keyspace, table, column, data)
+}
+
+func QueryTableColumnDrop(keyspace, table, column Identifier) string {
+	return fmt.Sprintf("alter table %v.%v drop %v", keyspace, table, column)
 }
 
 func QueryTableCreate(keyspace, table Identifier, columns map[Identifier]Type, static map[Identifier]struct{}, partition, cluster []Identifier, options ...Option) string {
