@@ -64,10 +64,6 @@ func QueryAggregateDrop(keyspace, aggregate Identifier, parameters []Type, optio
 	return queryDrop("aggregate", queryFunc(keyspace, aggregate, parameters), options)
 }
 
-func QueryColumnAlter() string {
-	return ""
-}
-
 func QueryFunctionCreate(keyspace, function Identifier, parameters []Type, returns Type, language string, body Term, options ...Option) string {
 	var m = optionMap(options)
 	var q []string
