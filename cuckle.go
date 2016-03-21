@@ -200,7 +200,31 @@ func QueryMaterializedViewDrop(keyspace, table Identifier, options ...Option) st
 	return queryDrop("materialized view", queryID(keyspace, table), options)
 }
 
-func QueryTableAlter() string {
+func QueryTableAlter(keyspace, table Identifier, options ...Option) string {
+	var m = optionMap(options)
+	var q = []string{fmt.Sprintf("alter table %v.%v with", keyspace, table)}
+	var ss []string
+
+	if optionHas(m, OptionClusteringOrder) {
+		ss = append(ss, "clustering order")
+	}
+
+	if optionHas(m, OptionCompactStorage) {
+		ss = append(ss, "compact storage")
+	}
+
+	if vs, ok := m[OptionProperties]; ok {
+		for k, v := range vs[0].(map[Identifier]Term) {
+			ss = append(ss, fmt.Sprintf("%v = %v", k, v))
+		}
+	}
+
+	q = append(q, strings.Join(ss, " and "))
+
+	return strings.Join(q, " ")
+}
+
+func QueryTableColumnAlter() string {
 	return ""
 }
 
