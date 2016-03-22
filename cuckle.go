@@ -97,6 +97,67 @@ func QueryFunctionDrop(keyspace, function Identifier, parameters []Type, options
 	return queryDrop("function", queryFunc(keyspace, function, parameters), options)
 }
 
+func QueryGet(keyspace, table, count Identifier, s []Selector, r []Relation, o []Order, aliases map[int]Identifier, ordered []Identifier, limit int, distinct, filtering bool, options ...Option) string {
+	var m = optionMap(options)
+	var q = []string{"select"}
+
+	if optionHas(m, OptionJSON) {
+		q = append(q, "json")
+	}
+
+	if distinct {
+		q = append(q, "distinct")
+	}
+
+	if len(s) == 0 {
+		q = append(q, "count(*)")
+
+		if count != "" {
+			q = append(q, fmt.Sprintf("as %v", count))
+		}
+	} else {
+		var ss []string
+
+		for _, s := range s {
+			ss = append(ss, string(s))
+		}
+
+		q = append(q, strings.Join(ss, ", "))
+	}
+
+	if limit > 0 {
+		q = append(q, fmt.Sprintf("limit %v", limit))
+	}
+
+	if filtering {
+		q = append(q, "allow filtering")
+	}
+
+	q = append(q, fmt.Sprintf("from %v.%v", keyspace, table))
+
+	if len(r) > 0 {
+		var ss []string
+
+		for _, r := range r {
+			ss = append(ss, string(r))
+		}
+
+		q = append(q, fmt.Sprintf("where %v", strings.Join(ss, " and ")))
+	}
+
+	if len(ordered) > 0 {
+		var ss []string
+
+		for i := range ordered {
+			ss = append(ss, fmt.Sprintf("%v %v", ordered[i], o[i]))
+		}
+
+		q = append(q, fmt.Sprintf("order by %v", strings.Join(ss, ", ")))
+	}
+
+	return strings.Join(q, " ")
+}
+
 func QueryIndexCreate(keyspace, table, column, index Identifier, keys bool, options ...Option) string {
 	var m = optionMap(options)
 	var q = []string{"create index"}
