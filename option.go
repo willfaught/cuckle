@@ -83,7 +83,6 @@ const (
 	optionOptions
 	optionOrderByColumns
 	optionOrderByDirections
-	optionProperties
 	optionReplace
 	optionSelectors
 	optionTTL

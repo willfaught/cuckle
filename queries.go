@@ -435,7 +435,7 @@ func QueryTableCreate(keyspace, table Identifier, columns map[Identifier]Type, s
 		ss = append(ss, "compact storage")
 	}
 
-	if vs, ok := options[optionProperties]; ok {
+	if vs, ok := options[optionOptions]; ok {
 		for k, v := range vs.(map[Identifier]Term) {
 			ss = append(ss, fmt.Sprintf("%v = %v", k, v))
 		}
@@ -531,11 +531,31 @@ func QueryTypeFieldRename(keyspace, type_, renames map[Identifier]Identifier) st
 	return fmt.Sprintf("alter type %v.%v rename %v", keyspace, type_, strings.Join(ss, " and "))
 }
 
-func QueryViewAlter() string {
-	return ""
+func QueryViewAlter(keyspace, view Identifier, o ...Option) string {
+	var options = combine(o)
+	var q = []string{fmt.Sprintf("alter materialized view %v.%v where", keyspace, view)}
+	var ss []string
+
+	if _, ok := options[optionClusteringOrder]; ok {
+		ss = append(ss, "clustering order")
+	}
+
+	if _, ok := options[optionCompactStorage]; ok {
+		ss = append(ss, "compact storage")
+	}
+
+	if vs, ok := options[optionOptions]; ok {
+		for k, v := range vs.(map[Identifier]Term) {
+			ss = append(ss, fmt.Sprintf("%v = %v", k, v))
+		}
+	}
+
+	q = append(q, strings.Join(ss, " and "))
+
+	return strings.Join(q, " ")
 }
 
-func QueryViewCreate(keyspace, table, view Identifier, o ...Option) string {
+func QueryViewCreate(keyspace, table, view Identifier, s []Selector, partition, cluster []Identifier, o ...Option) string {
 	var options = combine(o)
 	var q = []string{"create materialized view"}
 
@@ -543,9 +563,52 @@ func QueryViewCreate(keyspace, table, view Identifier, o ...Option) string {
 		q = append(q, "if not exists")
 	}
 
-	q = append(q, fmt.Sprintf("%v as select", view))
+	q = append(q, fmt.Sprintf("%v.%v as select", keyspace, view))
 
-	// TODO
+	var ss []string
+
+	for _, s := range s {
+		ss = append(ss, string(s))
+	}
+
+	q = append(q, strings.Join(ss, ", "), fmt.Sprintf("from %v.%v", keyspace, table))
+
+	if rs, ok := options[optionWhere]; ok {
+		ss = nil
+
+		for _, r := range rs.([]Relation) {
+			ss = append(ss, string(r))
+		}
+
+		q = append(q, fmt.Sprintf("where %v", strings.Join(ss, " and ")))
+	}
+
+	var key = strings.Join(stringsFromIdentifiers(partition), ", ")
+
+	if len(cluster) > 0 {
+		key = fmt.Sprintf("(%v), %v", key, strings.Join(stringsFromIdentifiers(cluster), ", "))
+	}
+
+	q = append(q, fmt.Sprintf("primary key (%v)"), key)
+	ss = nil
+
+	if _, ok := options[optionClusteringOrder]; ok {
+		ss = append(ss, "clustering order")
+	}
+
+	if _, ok := options[optionCompactStorage]; ok {
+		ss = append(ss, "compact storage")
+	}
+
+	if vs, ok := options[optionOptions]; ok {
+		for k, v := range vs.(map[Identifier]Term) {
+			ss = append(ss, fmt.Sprintf("%v = %v", k, v))
+		}
+	}
+
+	if len(ss) > 0 {
+		q = append(q, "with", strings.Join(ss, " and "))
+	}
 
 	return strings.Join(q, " ")
 }
