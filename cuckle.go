@@ -223,7 +223,47 @@ func QueryRowsDelete(keyspace, table Identifier, r []Relation, o ...Option) stri
 	return strings.Join(q, " ")
 }
 
-func QueryRowsGet(keyspace, table Identifier, o ...Option) string {
+func QueryRowsInsert(keyspace, table Identifier, columns []Identifier, values []Term, json string, o ...Option) string {
+	var options = combine(o)
+	var q = []string{fmt.Sprintf("insert into %v.%v", keyspace, table)}
+
+	if json != "" {
+		q = append(q, "json", string(ConstantString(json)))
+	}
+
+	if len(columns) > 0 {
+		var cs, vs []string
+
+		for i := range columns {
+			cs = append(cs, fmt.Sprint(columns[i]))
+			vs = append(vs, string(values[i]))
+		}
+
+		q = append(q, fmt.Sprintf("(%v) values (%v)", strings.Join(cs, ", "), strings.Join(vs, ", ")))
+	}
+
+	if _, ok := options[optionIfNotExists]; ok {
+		q = append(q, "if not exists")
+	}
+
+	var ss []string
+
+	if t, ok := options[optionTimestamp]; ok {
+		ss = append(ss, fmt.Sprintf("timestamp %v", t))
+	}
+
+	if t, ok := options[optionTTL]; ok {
+		ss = append(ss, fmt.Sprintf("ttl %v", t))
+	}
+
+	if len(ss) > 0 {
+		q = append(q, fmt.Sprintf("using %v", strings.Join(ss, " and ")))
+	}
+
+	return strings.Join(q, " ")
+}
+
+func QueryRowsSelect(keyspace, table Identifier, o ...Option) string {
 	var options = combine(o)
 	var q = []string{"select"}
 
@@ -281,46 +321,6 @@ func QueryRowsGet(keyspace, table Identifier, o ...Option) string {
 
 	if _, ok := options[optionAllowFiltering]; ok {
 		q = append(q, "allow filtering")
-	}
-
-	return strings.Join(q, " ")
-}
-
-func QueryRowsInsert(keyspace, table Identifier, columns []Identifier, values []Term, json string, o ...Option) string {
-	var options = combine(o)
-	var q = []string{fmt.Sprintf("insert into %v.%v", keyspace, table)}
-
-	if json != "" {
-		q = append(q, "json", string(ConstantString(json)))
-	}
-
-	if len(columns) > 0 {
-		var cs, vs []string
-
-		for i := range columns {
-			cs = append(cs, fmt.Sprint(columns[i]))
-			vs = append(vs, string(values[i]))
-		}
-
-		q = append(q, fmt.Sprintf("(%v) values (%v)", strings.Join(cs, ", "), strings.Join(vs, ", ")))
-	}
-
-	if _, ok := options[optionIfNotExists]; ok {
-		q = append(q, "if not exists")
-	}
-
-	var ss []string
-
-	if t, ok := options[optionTimestamp]; ok {
-		ss = append(ss, fmt.Sprintf("timestamp %v", t))
-	}
-
-	if t, ok := options[optionTTL]; ok {
-		ss = append(ss, fmt.Sprintf("ttl %v", t))
-	}
-
-	if len(ss) > 0 {
-		q = append(q, fmt.Sprintf("using %v", strings.Join(ss, " and ")))
 	}
 
 	return strings.Join(q, " ")
