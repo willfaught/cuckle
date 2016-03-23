@@ -47,6 +47,28 @@ func QueryAggregateDrop(keyspace, aggregate Identifier, parameters []Type, o ...
 	return queryDrop("aggregate", queryFunc(keyspace, aggregate, parameters), o)
 }
 
+func QueryBatch(counter bool, timestamp int64, queries []string) string {
+	var q = []string{"begin"}
+
+	var kind string
+
+	if counter {
+		kind = "counter"
+	} else {
+		kind = "unlogged"
+	}
+
+	q = append(q, kind, "batch")
+
+	if timestamp != 0 {
+		q = append(q, fmt.Sprintf("using timestamp %v", timestamp))
+	}
+
+	q = append(q, strings.Join(queries, "; "), "apply batch")
+
+	return strings.Join(q, " ")
+}
+
 func QueryFunctionCreate(keyspace, function Identifier, parameters []Type, returns Type, language string, body string, o ...Option) string {
 	var options = combine(o)
 	var q []string
