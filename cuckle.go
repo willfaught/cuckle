@@ -777,6 +777,11 @@ func NewRelation(left Term, o Operator, right Term) Relation {
 
 type Selector string
 
+const (
+	SelectorAll   Selector = "*"
+	SelectorCount Selector = "count(*)"
+)
+
 func SelectorAlias(s Selector, alias Identifier) Selector {
 	return Selector(fmt.Sprintf("%v as %v", s, alias))
 }
