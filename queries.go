@@ -177,7 +177,7 @@ func QueryKeyspaceDrop(keyspace Identifier, o ...Option) string {
 	return queryDrop("keyspace", fmt.Sprint(keyspace), o)
 }
 
-func QueryRowsDelete(keyspace, table Identifier, where []Relation, o ...Option) string {
+func QueryRowDelete(keyspace, table Identifier, where []Relation, o ...Option) string {
 	var options = combine(o)
 	var q = []string{"delete"}
 
@@ -222,7 +222,7 @@ func QueryRowsDelete(keyspace, table Identifier, where []Relation, o ...Option) 
 	return strings.Join(q, " ")
 }
 
-func QueryRowsInsert(keyspace, table Identifier, columns []Identifier, values []Term, json string, o ...Option) string {
+func QueryRowInsert(keyspace, table Identifier, columns []Identifier, values []Term, json string, o ...Option) string {
 	var options = combine(o)
 	var q = []string{fmt.Sprintf("insert into %v.%v", keyspace, table)}
 
@@ -262,7 +262,7 @@ func QueryRowsInsert(keyspace, table Identifier, columns []Identifier, values []
 	return strings.Join(q, " ")
 }
 
-func QueryRowsSelect(keyspace, table Identifier, s []Selector, o ...Option) string {
+func QueryRowSelect(keyspace, table Identifier, s []Selector, o ...Option) string {
 	var options = combine(o)
 	var q = []string{"select"}
 
@@ -315,7 +315,7 @@ func QueryRowsSelect(keyspace, table Identifier, s []Selector, o ...Option) stri
 	return strings.Join(q, " ")
 }
 
-func QueryRowsUpdate(keyspace, table Identifier, assign, where []Relation, o ...Option) string {
+func QueryRowUpdate(keyspace, table Identifier, assign, where []Relation, o ...Option) string {
 	var options = combine(o)
 	var q = []string{fmt.Sprintf("update %v.%v", keyspace, table)}
 	var ss []string
