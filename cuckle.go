@@ -210,11 +210,11 @@ func QueryRowsDelete(keyspace, table Identifier, r []Relation, o ...Option) stri
 		q = append(q, "if exists")
 	}
 
-	if cs, ok := options[optionConditions]; ok {
+	if is, ok := options[optionIf]; ok {
 		ss = nil
 
-		for _, c := range cs.([]Relation) {
-			ss = append(ss, string(c))
+		for _, i := range is.([]Relation) {
+			ss = append(ss, string(i))
 		}
 
 		q = append(q, fmt.Sprintf("if %v", strings.Join(ss, " and ")))
@@ -253,7 +253,7 @@ func QueryRowsGet(keyspace, table Identifier, o ...Option) string {
 
 	q = append(q, fmt.Sprintf("from %v.%v", keyspace, table))
 
-	if rs, ok := options[optionRelations]; ok {
+	if rs, ok := options[optionWhere]; ok {
 		var ss []string
 
 		for _, r := range rs.([]Relation) {
@@ -281,6 +281,46 @@ func QueryRowsGet(keyspace, table Identifier, o ...Option) string {
 
 	if _, ok := options[optionAllowFiltering]; ok {
 		q = append(q, "allow filtering")
+	}
+
+	return strings.Join(q, " ")
+}
+
+func QueryRowsInsert(keyspace, table Identifier, columns []Identifier, values []Term, json string, o ...Option) string {
+	var options = combine(o)
+	var q = []string{fmt.Sprintf("insert into %v.%v", keyspace, table)}
+
+	if json != "" {
+		q = append(q, "json", string(ConstantString(json)))
+	}
+
+	if len(columns) > 0 {
+		var cs, vs []string
+
+		for i := range columns {
+			cs = append(cs, fmt.Sprint(columns[i]))
+			vs = append(vs, string(values[i]))
+		}
+
+		q = append(q, fmt.Sprintf("(%v) values (%v)", strings.Join(cs, ", "), strings.Join(vs, ", ")))
+	}
+
+	if _, ok := options[optionIfNotExists]; ok {
+		q = append(q, "if not exists")
+	}
+
+	var ss []string
+
+	if t, ok := options[optionTimestamp]; ok {
+		ss = append(ss, fmt.Sprintf("timestamp %v", t))
+	}
+
+	if t, ok := options[optionTTL]; ok {
+		ss = append(ss, fmt.Sprintf("ttl %v", t))
+	}
+
+	if len(ss) > 0 {
+		q = append(q, fmt.Sprintf("using %v", strings.Join(ss, " and ")))
 	}
 
 	return strings.Join(q, " ")
@@ -599,6 +639,7 @@ func (i Identifier) String() string {
 type Operator string
 
 const (
+	OperatorAdd          Operator = "+"
 	OperatorContains     Operator = "contains"
 	OperatorContainsKey  Operator = "contains key"
 	OperatorEqual        Operator = "="
@@ -608,6 +649,7 @@ const (
 	OperatorLess         Operator = "<"
 	OperatorLessEqual    Operator = "<="
 	OperatorNotEqual     Operator = "!="
+	OperatorSubtract     Operator = "-"
 )
 
 type Option map[option]interface{}
@@ -622,12 +664,20 @@ func OptionAliases(aliases map[Identifier]Identifier) Option {
 	return Option{optionAliases: aliases}
 }
 
+func OptionAssignments(r ...Relation) Option {
+	return Option{optionAssignments: r}
+}
+
 func OptionCountAlias(alias Identifier) Option {
 	return Option{optionCountAlias: alias}
 }
 
 func OptionFinalFunc(finalFunc Identifier) Option {
 	return Option{optionFinalFunc: finalFunc}
+}
+
+func OptionIf(r ...Relation) Option {
+	return Option{optionIf: r}
 }
 
 func OptionIndexIdentifier(index Identifier) Option {
@@ -644,10 +694,6 @@ func OptionLimit(limit int) Option {
 
 func OptionOrder(i []Identifier, o []Order) Option {
 	return Option{optionOrderByColumns: i, optionOrderByDirections: o}
-}
-
-func OptionRelations(r ...Relation) Option {
-	return Option{optionRelations: r}
 }
 
 func OptionSelectors(s ...Selector) Option {
@@ -759,6 +805,10 @@ func TermMap(m map[Term]Term) Term {
 	return Term(fmt.Sprintf("{%v}", strings.Join(ss, ", ")))
 }
 
+func TermOperation(left Term, o Operator, right Term) Term {
+	return Term(fmt.Sprintf("%v %v %v", left, o, right))
+}
+
 func TermSet(t ...Term) Term {
 	var ss []string
 
@@ -839,10 +889,12 @@ type option int
 const (
 	optionAliases option = iota
 	optionAllowFiltering
+	optionAssignments
 	optionCalled
 	optionClusteringOrder
+	optionColumns
 	optionCompactStorage
-	optionConditions
+	optionIf
 	optionCountAlias
 	optionDistinct
 	optionFinalFunc
@@ -857,11 +909,13 @@ const (
 	optionOrderByColumns
 	optionOrderByDirections
 	optionProperties
-	optionRelations
 	optionReplace
 	optionSelectors
+	optionTTL
 	optionTimestamp
 	optionTrigger
 	optionTriggerIdentifier
 	optionUsing
+	optionValues
+	optionWhere
 )
