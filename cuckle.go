@@ -326,6 +326,52 @@ func QueryRowsInsert(keyspace, table Identifier, columns []Identifier, values []
 	return strings.Join(q, " ")
 }
 
+func QueryRowsUpdate(keyspace, table Identifier, assign, where []Relation, o ...Option) string {
+	var options = combine(o)
+	var q = []string{fmt.Sprintf("update %v.%v", keyspace, table)}
+	var ss []string
+
+	if t, ok := options[optionTimestamp]; ok {
+		ss = append(ss, fmt.Sprintf("timestamp %v", t))
+	}
+
+	if t, ok := options[optionTTL]; ok {
+		ss = append(ss, fmt.Sprintf("ttl %v", t))
+	}
+
+	if len(ss) > 0 {
+		q = append(q, fmt.Sprintf("using %v", strings.Join(ss, " and ")))
+	}
+
+	ss = nil
+
+	for _, r := range assign {
+		ss = append(ss, string(r))
+	}
+
+	q = append(q, fmt.Sprintf("set %v", strings.Join(ss, ", ")))
+
+	ss = nil
+
+	for _, r := range where {
+		ss = append(ss, string(r))
+	}
+
+	q = append(q, fmt.Sprintf("where %v", strings.Join(ss, " and ")))
+
+	if is, ok := options[optionIf]; ok {
+		ss = nil
+
+		for _, i := range is.([]Relation) {
+			ss = append(ss, string(i))
+		}
+
+		q = append(q, fmt.Sprintf("if %v", strings.Join(ss, " and ")))
+	}
+
+	return strings.Join(q, " ")
+}
+
 func QueryTableAlter(keyspace, table Identifier, properties map[Identifier]Term, o ...Option) string {
 	var options = combine(o)
 	var q = []string{fmt.Sprintf("alter table %v.%v with", keyspace, table)}
