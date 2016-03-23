@@ -178,6 +178,51 @@ func QueryMaterializedViewDrop(keyspace, table Identifier, o ...Option) string {
 	return queryDrop("materialized view", queryID(keyspace, table), o)
 }
 
+func QueryRowsDelete(keyspace, table Identifier, r []Relation, o ...Option) string {
+	var options = combine(o)
+	var q = []string{"delete"}
+
+	if sels, ok := options[optionSelectors]; ok {
+		var strs []string
+
+		for _, sel := range sels.([]Selector) {
+			strs = append(strs, string(sel))
+		}
+
+		q = append(q, strings.Join(strs, ", "))
+	}
+
+	q = append(q, fmt.Sprintf("from %v.%v", keyspace, table))
+
+	if t, ok := options[optionTimestamp]; ok {
+		q = append(q, fmt.Sprintf("using timestamp %v", t))
+	}
+
+	var ss []string
+
+	for _, r := range r {
+		ss = append(ss, string(r))
+	}
+
+	q = append(q, fmt.Sprintf("where %v", strings.Join(ss, " and ")))
+
+	if _, ok := options[optionIfExists]; ok {
+		q = append(q, "if exists")
+	}
+
+	if cs, ok := options[optionConditions]; ok {
+		ss = nil
+
+		for _, c := range cs.([]Relation) {
+			ss = append(ss, string(c))
+		}
+
+		q = append(q, fmt.Sprintf("if %v", strings.Join(ss, " and ")))
+	}
+
+	return strings.Join(q, " ")
+}
+
 func QueryRowsGet(keyspace, table Identifier, o ...Option) string {
 	var options = combine(o)
 	var q = []string{"select"}
@@ -206,14 +251,6 @@ func QueryRowsGet(keyspace, table Identifier, o ...Option) string {
 		}
 	}
 
-	if limit, ok := options[optionLimit]; ok {
-		q = append(q, fmt.Sprintf("limit %v", limit))
-	}
-
-	if _, ok := options[optionAllowFiltering]; ok {
-		q = append(q, "allow filtering")
-	}
-
 	q = append(q, fmt.Sprintf("from %v.%v", keyspace, table))
 
 	if rs, ok := options[optionRelations]; ok {
@@ -236,6 +273,14 @@ func QueryRowsGet(keyspace, table Identifier, o ...Option) string {
 		}
 
 		q = append(q, fmt.Sprintf("order by %v", strings.Join(ss, ", ")))
+	}
+
+	if limit, ok := options[optionLimit]; ok {
+		q = append(q, fmt.Sprintf("limit %v", limit))
+	}
+
+	if _, ok := options[optionAllowFiltering]; ok {
+		q = append(q, "allow filtering")
 	}
 
 	return strings.Join(q, " ")
@@ -562,6 +607,7 @@ const (
 	OperatorIn           Operator = "in"
 	OperatorLess         Operator = "<"
 	OperatorLessEqual    Operator = "<="
+	OperatorNotEqual     Operator = "!="
 )
 
 type Option map[option]interface{}
@@ -655,6 +701,10 @@ func SelectorFunc(function Identifier, arguments ...Selector) Selector {
 
 func SelectorIdentifier(i Identifier) Selector {
 	return Selector(fmt.Sprint(i))
+}
+
+func SelectorIndex(i Identifier, t Term) Selector {
+	return Selector(fmt.Sprintf("%v[%v]", i, t))
 }
 
 func SelectorTTL(i Identifier) Selector {
@@ -792,6 +842,7 @@ const (
 	optionCalled
 	optionClusteringOrder
 	optionCompactStorage
+	optionConditions
 	optionCountAlias
 	optionDistinct
 	optionFinalFunc
@@ -809,6 +860,7 @@ const (
 	optionRelations
 	optionReplace
 	optionSelectors
+	optionTimestamp
 	optionTrigger
 	optionTriggerIdentifier
 	optionUsing
