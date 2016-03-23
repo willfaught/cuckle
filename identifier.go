@@ -67,6 +67,11 @@ const (
 	FuncVarintToBlob    Identifier = "varinttoblob"
 )
 
+const (
+	KeyspaceDurableWrites Identifier = "durable_writes"
+	KeyspaceReplication   Identifier = "replication"
+)
+
 func (i Identifier) String() string {
 	return fmt.Sprintf("%q", i)
 }

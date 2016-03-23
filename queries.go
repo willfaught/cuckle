@@ -5,11 +5,6 @@ import (
 	"strings"
 )
 
-const (
-	KeyspaceDurableWrites = "durable writes"
-	KeyspaceReplication   = "replication"
-)
-
 func QueryAggregateCreate(keyspace, aggregate, stateFunc Identifier, parameters []Type, stateType Type, o ...Option) string {
 	var options = combine(o)
 	var q []string
