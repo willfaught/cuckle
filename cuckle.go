@@ -6,32 +6,15 @@ import (
 )
 
 const (
-	OptionAllowFiltering  = "allow filtering"
-	OptionCalled          = "called"
-	OptionClusteringOrder = "clustering order"
-	OptionCompactStorage  = "compact storage"
-	OptionDistinct        = "distinct"
-	OptionIfExists        = "if exists"
-	OptionIfNotExists     = "if not exists"
-	OptionJSON            = "json"
-	OptionLimit           = "limit"
-	OptionOptions         = "options"
-	OptionOrderBy         = "order by"
-	OptionProperties      = "properties"
-	OptionReplace         = "replace"
-	OptionUsing           = "using"
-)
-
-const (
 	KeyspaceDurableWrites = "durable writes"
 	KeyspaceReplication   = "replication"
 )
 
-func QueryAggregateCreate(keyspace, aggregate, stateFunc, finalFunc Identifier, parameters []Type, stateType Type, init Term, options ...Option) string {
-	var m = optionMap(options)
+func QueryAggregateCreate(keyspace, aggregate, stateFunc Identifier, parameters []Type, stateType Type, o ...Option) string {
+	var options = combine(o)
 	var q []string
 
-	if optionHas(m, OptionReplace) {
+	if _, ok := options[optionReplace]; ok {
 		q = append(q, "replace")
 	} else {
 		q = append(q, "create")
@@ -39,7 +22,7 @@ func QueryAggregateCreate(keyspace, aggregate, stateFunc, finalFunc Identifier, 
 
 	q = append(q, "aggregate")
 
-	if optionHas(m, OptionIfNotExists) {
+	if _, ok := options[optionIfNotExists]; ok {
 		q = append(q, "if not exists")
 	}
 
@@ -49,26 +32,26 @@ func QueryAggregateCreate(keyspace, aggregate, stateFunc, finalFunc Identifier, 
 
 	q = append(q, sig, "sfunc", sfunc, "stype", stype)
 
-	if len(finalFunc) > 0 {
-		q = append(q, "finalfunc", fmt.Sprint(finalFunc))
+	if f, ok := options[optionFinalFunc]; ok {
+		q = append(q, "finalfunc", fmt.Sprint(f))
 	}
 
-	if len(init) > 0 {
-		q = append(q, "initcond", string(init))
+	if i, ok := options[optionInitCond]; ok {
+		q = append(q, "initcond", i.(string))
 	}
 
 	return strings.Join(q, " ")
 }
 
-func QueryAggregateDrop(keyspace, aggregate Identifier, parameters []Type, options ...Option) string {
-	return queryDrop("aggregate", queryFunc(keyspace, aggregate, parameters), options)
+func QueryAggregateDrop(keyspace, aggregate Identifier, parameters []Type, o ...Option) string {
+	return queryDrop("aggregate", queryFunc(keyspace, aggregate, parameters), o)
 }
 
-func QueryFunctionCreate(keyspace, function Identifier, parameters []Type, returns Type, language string, body Term, options ...Option) string {
-	var m = optionMap(options)
+func QueryFunctionCreate(keyspace, function Identifier, parameters []Type, returns Type, language string, body string, o ...Option) string {
+	var options = combine(o)
 	var q []string
 
-	if optionHas(m, OptionReplace) {
+	if _, ok := options[optionReplace]; ok {
 		q = append(q, "replace")
 	} else {
 		q = append(q, "create")
@@ -76,131 +59,70 @@ func QueryFunctionCreate(keyspace, function Identifier, parameters []Type, retur
 
 	q = append(q, "function")
 
-	if optionHas(m, OptionIfNotExists) {
+	if _, ok := options[optionIfNotExists]; ok {
 		q = append(q, "if not exists")
 	}
 
 	q = append(q, fmt.Sprintf("%v.%v(%v)", keyspace, function, strings.Join(stringsFromTypes(parameters), ", ")))
 
-	if optionHas(m, OptionCalled) {
+	if _, ok := options[optionCalled]; ok {
 		q = append(q, "called")
 	} else {
 		q = append(q, "returns null")
 	}
 
-	q = append(q, "on null input returns", string(returns), "language", language, "as", string(body))
+	q = append(q, "on null input returns", string(returns), "language", language, "as", string(ConstantString(body)))
 
 	return strings.Join(q, " ")
 }
 
-func QueryFunctionDrop(keyspace, function Identifier, parameters []Type, options ...Option) string {
-	return queryDrop("function", queryFunc(keyspace, function, parameters), options)
+func QueryFunctionDrop(keyspace, function Identifier, parameters []Type, o ...Option) string {
+	return queryDrop("function", queryFunc(keyspace, function, parameters), o)
 }
 
-func QueryGet(keyspace, table, count Identifier, s []Selector, r []Relation, o []Order, aliases map[int]Identifier, ordered []Identifier, limit int, distinct, filtering bool, options ...Option) string {
-	var m = optionMap(options)
-	var q = []string{"select"}
-
-	if optionHas(m, OptionJSON) {
-		q = append(q, "json")
-	}
-
-	if distinct {
-		q = append(q, "distinct")
-	}
-
-	if len(s) == 0 {
-		q = append(q, "count(*)")
-
-		if count != "" {
-			q = append(q, fmt.Sprintf("as %v", count))
-		}
-	} else {
-		var ss []string
-
-		for _, s := range s {
-			ss = append(ss, string(s))
-		}
-
-		q = append(q, strings.Join(ss, ", "))
-	}
-
-	if limit > 0 {
-		q = append(q, fmt.Sprintf("limit %v", limit))
-	}
-
-	if filtering {
-		q = append(q, "allow filtering")
-	}
-
-	q = append(q, fmt.Sprintf("from %v.%v", keyspace, table))
-
-	if len(r) > 0 {
-		var ss []string
-
-		for _, r := range r {
-			ss = append(ss, string(r))
-		}
-
-		q = append(q, fmt.Sprintf("where %v", strings.Join(ss, " and ")))
-	}
-
-	if len(ordered) > 0 {
-		var ss []string
-
-		for i := range ordered {
-			ss = append(ss, fmt.Sprintf("%v %v", ordered[i], o[i]))
-		}
-
-		q = append(q, fmt.Sprintf("order by %v", strings.Join(ss, ", ")))
-	}
-
-	return strings.Join(q, " ")
-}
-
-func QueryIndexCreate(keyspace, table, column, index Identifier, keys bool, options ...Option) string {
-	var m = optionMap(options)
+func QueryIndexCreate(keyspace, table, column Identifier, o ...Option) string {
+	var options = combine(o)
 	var q = []string{"create index"}
 
-	if optionHas(m, OptionIfNotExists) {
+	if _, ok := options[optionIfNotExists]; ok {
 		q = append(q, "if not exists")
+	}
+
+	if n, ok := options[optionIndexIdentifier]; ok {
+		q = append(q, fmt.Sprint(n))
 	}
 
 	var id string
 
-	if keys {
+	if _, ok := options[optionIndexKeys]; ok {
 		id = fmt.Sprintf("keys(%v)", column)
 	} else {
 		id = fmt.Sprint(column)
 	}
 
-	q = append(q, fmt.Sprintf("%v on %v.%v(%v)", index, keyspace, table, id))
+	q = append(q, fmt.Sprintf("on %v.%v(%v)", keyspace, table, id))
 
-	if v, ok := optionGet(m, OptionUsing); ok {
-		q = append(q, "using", string(ConstantString(v[0].(string))))
+	if u, ok := options[optionUsing]; ok {
+		q = append(q, "using", string(ConstantString(u.(string))))
 
-		if v, ok := optionGet(m, OptionOptions); ok {
-			q = append(q, "with options", string(TermMap(v[0].(map[Term]Term))))
+		if o, ok := options[optionOptions]; ok {
+			q = append(q, "with options", string(TermMap(o.(map[Term]Term))))
 		}
 	}
 
 	return strings.Join(q, " ")
 }
 
-func QueryIndexDrop(keyspace, index Identifier, options ...Option) string {
-	return queryDrop("index", queryID(keyspace, index), options)
+func QueryIndexDrop(keyspace, index Identifier, o ...Option) string {
+	return queryDrop("index", queryID(keyspace, index), o)
 }
 
-func QueryKeyspaceAlter(keyspace Identifier, options ...Option) string {
-	var m = optionMap(options)
-	var q = []string{fmt.Sprintf("alter keyspace %v", keyspace)}
-
-	q = append(q, fmt.Sprintf("%v with", keyspace))
-
+func QueryKeyspaceAlter(keyspace Identifier, properties map[Identifier]Term) string {
+	var q = []string{fmt.Sprintf("alter keyspace %v with", keyspace)}
 	var ss []string
 
-	for k, v := range m[OptionProperties][0].(map[Identifier]Term) {
-		ss = append(ss, fmt.Sprintf("%v = %v", k, v[0]))
+	for i, t := range properties {
+		ss = append(ss, fmt.Sprintf("%v = %v", i, t))
 	}
 
 	q = append(q, strings.Join(ss, " and "))
@@ -208,21 +130,20 @@ func QueryKeyspaceAlter(keyspace Identifier, options ...Option) string {
 	return strings.Join(q, " ")
 }
 
-func QueryKeyspaceCreate(keyspace Identifier, options ...Option) string {
-	var m = optionMap(options)
+func QueryKeyspaceCreate(keyspace Identifier, properties map[Identifier]Term, o ...Option) string {
+	var options = combine(o)
 	var q = []string{"create keyspace"}
 
-	if optionHas(m, OptionIfNotExists) {
+	if _, ok := options[optionIfNotExists]; ok {
 		q = append(q, "if not exists")
-		delete(m, OptionIfNotExists)
 	}
 
 	q = append(q, fmt.Sprintf("%v with", keyspace))
 
 	var ss []string
 
-	for k, v := range m[OptionProperties][0].(map[Identifier]Term) {
-		ss = append(ss, fmt.Sprintf("%v = %v", k, v[0]))
+	for i, t := range properties {
+		ss = append(ss, fmt.Sprintf("%v = %v", i, t))
 	}
 
 	q = append(q, strings.Join(ss, " and "))
@@ -230,19 +151,19 @@ func QueryKeyspaceCreate(keyspace Identifier, options ...Option) string {
 	return strings.Join(q, " ")
 }
 
-func QueryKeyspaceDrop(keyspace Identifier, options ...Option) string {
-	return queryDrop("keyspace", fmt.Sprint(keyspace), options)
+func QueryKeyspaceDrop(keyspace Identifier, o ...Option) string {
+	return queryDrop("keyspace", fmt.Sprint(keyspace), o)
 }
 
 func QueryMaterializedViewAlter() string {
 	return ""
 }
 
-func QueryMaterializedViewCreate(keyspace, table, view Identifier, options ...Option) string {
-	var m = optionMap(options)
+func QueryMaterializedViewCreate(keyspace, table, view Identifier, o ...Option) string {
+	var options = combine(o)
 	var q = []string{"create materialized view"}
 
-	if optionHas(m, OptionIfNotExists) {
+	if _, ok := options[optionIfNotExists]; ok {
 		q = append(q, "if not exists")
 	}
 
@@ -253,27 +174,88 @@ func QueryMaterializedViewCreate(keyspace, table, view Identifier, options ...Op
 	return strings.Join(q, " ")
 }
 
-func QueryMaterializedViewDrop(keyspace, table Identifier, options ...Option) string {
-	return queryDrop("materialized view", queryID(keyspace, table), options)
+func QueryMaterializedViewDrop(keyspace, table Identifier, o ...Option) string {
+	return queryDrop("materialized view", queryID(keyspace, table), o)
 }
 
-func QueryTableAlter(keyspace, table Identifier, options ...Option) string {
-	var m = optionMap(options)
+func QueryRowsGet(keyspace, table Identifier, o ...Option) string {
+	var options = combine(o)
+	var q = []string{"select"}
+
+	if _, ok := options[optionJSON]; ok {
+		q = append(q, "json")
+	}
+
+	if _, ok := options[optionDistinct]; ok {
+		q = append(q, "distinct")
+	}
+
+	if sels, ok := options[optionSelectors]; ok {
+		var strs []string
+
+		for _, sel := range sels.([]Selector) {
+			strs = append(strs, string(sel))
+		}
+
+		q = append(q, strings.Join(strs, ", "))
+	} else {
+		q = append(q, "count(*)")
+
+		if a, ok := options[optionCountAlias]; ok {
+			q = append(q, fmt.Sprintf("as %v", a))
+		}
+	}
+
+	if limit, ok := options[optionLimit]; ok {
+		q = append(q, fmt.Sprintf("limit %v", limit))
+	}
+
+	if _, ok := options[optionAllowFiltering]; ok {
+		q = append(q, "allow filtering")
+	}
+
+	q = append(q, fmt.Sprintf("from %v.%v", keyspace, table))
+
+	if rs, ok := options[optionRelations]; ok {
+		var ss []string
+
+		for _, r := range rs.([]Relation) {
+			ss = append(ss, string(r))
+		}
+
+		q = append(q, fmt.Sprintf("where %v", strings.Join(ss, " and ")))
+	}
+
+	if cs, ok := options[optionOrderByColumns]; ok {
+		var is = cs.([]Identifier)
+		var ds = options[optionOrderByDirections].([]Order)
+		var ss []string
+
+		for i := range is {
+			ss = append(ss, fmt.Sprintf("%v %v", is[i], ds[i]))
+		}
+
+		q = append(q, fmt.Sprintf("order by %v", strings.Join(ss, ", ")))
+	}
+
+	return strings.Join(q, " ")
+}
+
+func QueryTableAlter(keyspace, table Identifier, properties map[Identifier]Term, o ...Option) string {
+	var options = combine(o)
 	var q = []string{fmt.Sprintf("alter table %v.%v with", keyspace, table)}
 	var ss []string
 
-	if optionHas(m, OptionClusteringOrder) {
+	if _, ok := options[optionClusteringOrder]; ok {
 		ss = append(ss, "clustering order")
 	}
 
-	if optionHas(m, OptionCompactStorage) {
+	if _, ok := options[optionCompactStorage]; ok {
 		ss = append(ss, "compact storage")
 	}
 
-	if vs, ok := m[OptionProperties]; ok {
-		for k, v := range vs[0].(map[Identifier]Term) {
-			ss = append(ss, fmt.Sprintf("%v = %v", k, v))
-		}
+	for i, t := range properties {
+		ss = append(ss, fmt.Sprintf("%v = %v", i, t))
 	}
 
 	q = append(q, strings.Join(ss, " and "))
@@ -293,11 +275,11 @@ func QueryTableColumnDrop(keyspace, table, column Identifier) string {
 	return fmt.Sprintf("alter table %v.%v drop %v", keyspace, table, column)
 }
 
-func QueryTableCreate(keyspace, table Identifier, columns map[Identifier]Type, static map[Identifier]struct{}, partition, cluster []Identifier, options ...Option) string {
-	var m = optionMap(options)
+func QueryTableCreate(keyspace, table Identifier, columns map[Identifier]Type, static map[Identifier]struct{}, partition, cluster []Identifier, o ...Option) string {
+	var options = combine(o)
 	var q = []string{"create table"}
 
-	if optionHas(m, OptionIfExists) {
+	if _, ok := options[optionIfExists]; ok {
 		q = append(q, "if not exists")
 	}
 
@@ -325,16 +307,16 @@ func QueryTableCreate(keyspace, table Identifier, columns map[Identifier]Type, s
 	q = append(q, fmt.Sprintf("%v.%v(%v)", keyspace, table, strings.Join(ss, ", ")))
 	ss = nil
 
-	if optionHas(m, OptionClusteringOrder) {
+	if _, ok := options[optionClusteringOrder]; ok {
 		ss = append(ss, "clustering order")
 	}
 
-	if optionHas(m, OptionCompactStorage) {
+	if _, ok := options[optionCompactStorage]; ok {
 		ss = append(ss, "compact storage")
 	}
 
-	if vs, ok := m[OptionProperties]; ok {
-		for k, v := range vs[0].(map[Identifier]Term) {
+	if vs, ok := options[optionProperties]; ok {
+		for k, v := range vs.(map[Identifier]Term) {
 			ss = append(ss, fmt.Sprintf("%v = %v", k, v))
 		}
 	}
@@ -346,24 +328,24 @@ func QueryTableCreate(keyspace, table Identifier, columns map[Identifier]Type, s
 	return strings.Join(q, " ")
 }
 
-func QueryTableDrop(keyspace, table Identifier, options ...Option) string {
-	return queryDrop("table", queryID(keyspace, table), options)
+func QueryTableDrop(keyspace, table Identifier, o ...Option) string {
+	return queryDrop("table", queryID(keyspace, table), o)
 }
 
 func QueryTableTruncate(keyspace, table Identifier) string {
 	return fmt.Sprintf("truncate table %v.%v", keyspace, table)
 }
 
-func QueryTriggerCreate(keyspace, table, trigger Identifier, class string, options ...Option) string {
-	var m = optionMap(options)
+func QueryTriggerCreate(keyspace, table, trigger Identifier, class string, o ...Option) string {
+	var options = combine(o)
 	var q = []string{"create trigger"}
 
-	if optionHas(m, OptionIfExists) {
+	if _, ok := options[optionIfNotExists]; ok {
 		q = append(q, "if not exists")
 	}
 
-	if len(trigger) > 0 {
-		q = append(q, fmt.Sprint(trigger))
+	if t, ok := options[optionTriggerIdentifier]; ok {
+		q = append(q, fmt.Sprint(t))
 	}
 
 	q = append(q, fmt.Sprintf("on %v.%v using %v", keyspace, table, string(ConstantString(class))))
@@ -371,16 +353,16 @@ func QueryTriggerCreate(keyspace, table, trigger Identifier, class string, optio
 	return strings.Join(q, " ")
 }
 
-func QueryTriggerDrop(keyspace, table, trigger Identifier, options ...Option) string {
-	var m = optionMap(options)
+func QueryTriggerDrop(keyspace, table Identifier, o ...Option) string {
+	var options = combine(o)
 	var q = []string{"drop trigger"}
 
-	if optionHas(m, OptionIfExists) {
-		q = append(q, "if not exists")
+	if _, ok := options[optionIfExists]; ok {
+		q = append(q, "if exists")
 	}
 
-	if len(trigger) > 0 {
-		q = append(q, fmt.Sprint(trigger))
+	if t, ok := options[optionTriggerIdentifier]; ok {
+		q = append(q, fmt.Sprint(t))
 	}
 
 	q = append(q, fmt.Sprintf("on %v.%v", keyspace, table))
@@ -388,11 +370,11 @@ func QueryTriggerDrop(keyspace, table, trigger Identifier, options ...Option) st
 	return strings.Join(q, " ")
 }
 
-func QueryTypeCreate(keyspace, type_ Identifier, fields map[Identifier]Type, options ...Option) string {
-	var m = optionMap(options)
+func QueryTypeCreate(keyspace, type_ Identifier, fields map[Identifier]Type, o ...Option) string {
+	var options = combine(o)
 	var q = []string{"create type"}
 
-	if optionHas(m, OptionIfExists) {
+	if _, ok := options[optionIfNotExists]; ok {
 		q = append(q, "if not exists")
 	}
 
@@ -407,8 +389,8 @@ func QueryTypeCreate(keyspace, type_ Identifier, fields map[Identifier]Type, opt
 	return strings.Join(q, " ")
 }
 
-func QueryTypeDrop(keyspace, type_ Identifier, options ...Option) string {
-	return queryDrop("type", queryID(keyspace, type_), options)
+func QueryTypeDrop(keyspace, type_ Identifier, o ...Option) string {
+	return queryDrop("type", queryID(keyspace, type_), o)
 }
 
 func QueryTypeFieldAlter(keyspace, type_, field Identifier, data Type) string {
@@ -429,34 +411,12 @@ func QueryTypeFieldRename(keyspace, type_, renames map[Identifier]Identifier) st
 	return fmt.Sprintf("alter type %v.%v rename %v", keyspace, type_, strings.Join(ss, " and "))
 }
 
-func optionGet(m map[string][]interface{}, name string) ([]interface{}, bool) {
-	var v, ok = m[name]
-
-	return v, ok
-}
-
-func optionHas(m map[string][]interface{}, name string) bool {
-	var _, ok = m[name]
-
-	return ok
-}
-
-func optionMap(options []Option) map[string][]interface{} {
-	var m = map[string][]interface{}{}
-
-	for _, o := range options {
-		o(m)
-	}
-
-	return m
-}
-
-func queryDrop(kind string, id string, options []Option) string {
-	var m = optionMap(options)
+func queryDrop(kind string, id string, o []Option) string {
+	var options = combine(o)
 	var q = []string{"drop", kind}
 
-	if optionHas(m, OptionIfExists) {
-		q = append(q, string(OptionIfExists))
+	if _, ok := options[optionIfExists]; ok {
+		q = append(q, string(optionIfExists))
 	}
 
 	q = append(q, id)
@@ -604,12 +564,64 @@ const (
 	OperatorLessEqual    Operator = "<="
 )
 
-type Option func(map[string][]interface{})
+type Option map[option]interface{}
 
-func NewOption(name string, values ...interface{}) Option {
-	return func(m map[string][]interface{}) {
-		m[name] = append(m[name], values...)
+var (
+	OptionAllowFiltering Option = Option{optionAllowFiltering: nil}
+	OptionDistinct       Option = Option{optionDistinct: nil}
+	OptionIndexKeys      Option = Option{optionIndexKeys: nil}
+)
+
+func OptionAliases(aliases map[Identifier]Identifier) Option {
+	return Option{optionAliases: aliases}
+}
+
+func OptionCountAlias(alias Identifier) Option {
+	return Option{optionCountAlias: alias}
+}
+
+func OptionFinalFunc(finalFunc Identifier) Option {
+	return Option{optionFinalFunc: finalFunc}
+}
+
+func OptionIndexIdentifier(index Identifier) Option {
+	return Option{optionIndexIdentifier: index}
+}
+
+func OptionInitCond(initCond Term) Option {
+	return Option{optionInitCond: initCond}
+}
+
+func OptionLimit(limit int) Option {
+	return Option{optionLimit: limit}
+}
+
+func OptionOrder(i []Identifier, o []Order) Option {
+	return Option{optionOrderByColumns: i, optionOrderByDirections: o}
+}
+
+func OptionRelations(r ...Relation) Option {
+	return Option{optionRelations: r}
+}
+
+func OptionSelectors(s ...Selector) Option {
+	return Option{optionSelectors: s}
+}
+
+func OptionTriggerIdentifier(trigger Identifier) Option {
+	return Option{optionTriggerIdentifier: trigger}
+}
+
+func combine(os []Option) Option {
+	var combined = Option{}
+
+	for _, o := range os {
+		for k, v := range o {
+			combined[k] = v
+		}
 	}
+
+	return combined
 }
 
 type Order string
@@ -771,3 +783,33 @@ const VariableAnonymous Variable = "?"
 func NewVariable(name string) Variable {
 	return Variable(fmt.Sprintf(":%v", name))
 }
+
+type option int
+
+const (
+	optionAliases option = iota
+	optionAllowFiltering
+	optionCalled
+	optionClusteringOrder
+	optionCompactStorage
+	optionCountAlias
+	optionDistinct
+	optionFinalFunc
+	optionIfExists
+	optionIfNotExists
+	optionIndexIdentifier
+	optionIndexKeys
+	optionInitCond
+	optionJSON
+	optionLimit
+	optionOptions
+	optionOrderByColumns
+	optionOrderByDirections
+	optionProperties
+	optionRelations
+	optionReplace
+	optionSelectors
+	optionTrigger
+	optionTriggerIdentifier
+	optionUsing
+)
