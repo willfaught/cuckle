@@ -177,29 +177,6 @@ func QueryKeyspaceDrop(keyspace Identifier, o ...Option) string {
 	return queryDrop("keyspace", fmt.Sprint(keyspace), o)
 }
 
-func QueryMaterializedViewAlter() string {
-	return ""
-}
-
-func QueryMaterializedViewCreate(keyspace, table, view Identifier, o ...Option) string {
-	var options = combine(o)
-	var q = []string{"create materialized view"}
-
-	if _, ok := options[optionIfNotExists]; ok {
-		q = append(q, "if not exists")
-	}
-
-	q = append(q, fmt.Sprintf("%v as select", view))
-
-	// TODO
-
-	return strings.Join(q, " ")
-}
-
-func QueryMaterializedViewDrop(keyspace, table Identifier, o ...Option) string {
-	return queryDrop("materialized view", queryID(keyspace, table), o)
-}
-
 func QueryRowsDelete(keyspace, table Identifier, where []Relation, o ...Option) string {
 	var options = combine(o)
 	var q = []string{"delete"}
@@ -552,6 +529,29 @@ func QueryTypeFieldRename(keyspace, type_, renames map[Identifier]Identifier) st
 	}
 
 	return fmt.Sprintf("alter type %v.%v rename %v", keyspace, type_, strings.Join(ss, " and "))
+}
+
+func QueryViewAlter() string {
+	return ""
+}
+
+func QueryViewCreate(keyspace, table, view Identifier, o ...Option) string {
+	var options = combine(o)
+	var q = []string{"create materialized view"}
+
+	if _, ok := options[optionIfNotExists]; ok {
+		q = append(q, "if not exists")
+	}
+
+	q = append(q, fmt.Sprintf("%v as select", view))
+
+	// TODO
+
+	return strings.Join(q, " ")
+}
+
+func QueryViewDrop(keyspace, table Identifier, o ...Option) string {
+	return queryDrop("materialized view", queryID(keyspace, table), o)
 }
 
 func queryDrop(kind string, id string, o []Option) string {
