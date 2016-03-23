@@ -178,7 +178,7 @@ func QueryMaterializedViewDrop(keyspace, table Identifier, o ...Option) string {
 	return queryDrop("materialized view", queryID(keyspace, table), o)
 }
 
-func QueryRowsDelete(keyspace, table Identifier, r []Relation, o ...Option) string {
+func QueryRowsDelete(keyspace, table Identifier, where []Relation, o ...Option) string {
 	var options = combine(o)
 	var q = []string{"delete"}
 
@@ -200,7 +200,7 @@ func QueryRowsDelete(keyspace, table Identifier, r []Relation, o ...Option) stri
 
 	var ss []string
 
-	for _, r := range r {
+	for _, r := range where {
 		ss = append(ss, string(r))
 	}
 
@@ -263,7 +263,7 @@ func QueryRowsInsert(keyspace, table Identifier, columns []Identifier, values []
 	return strings.Join(q, " ")
 }
 
-func QueryRowsSelect(keyspace, table Identifier, o ...Option) string {
+func QueryRowsSelect(keyspace, table Identifier, s []Selector, o ...Option) string {
 	var options = combine(o)
 	var q = []string{"select"}
 
@@ -275,23 +275,13 @@ func QueryRowsSelect(keyspace, table Identifier, o ...Option) string {
 		q = append(q, "distinct")
 	}
 
-	if sels, ok := options[optionSelectors]; ok {
-		var strs []string
+	var ss []string
 
-		for _, sel := range sels.([]Selector) {
-			strs = append(strs, string(sel))
-		}
-
-		q = append(q, strings.Join(strs, ", "))
-	} else {
-		q = append(q, "count(*)")
-
-		if a, ok := options[optionCountAlias]; ok {
-			q = append(q, fmt.Sprintf("as %v", a))
-		}
+	for _, s := range s {
+		ss = append(ss, string(s))
 	}
 
-	q = append(q, fmt.Sprintf("from %v.%v", keyspace, table))
+	q = append(q, strings.Join(ss, ", "), fmt.Sprintf("from %v.%v", keyspace, table))
 
 	if rs, ok := options[optionWhere]; ok {
 		var ss []string
@@ -714,10 +704,6 @@ func OptionAssignments(r ...Relation) Option {
 	return Option{optionAssignments: r}
 }
 
-func OptionCountAlias(alias Identifier) Option {
-	return Option{optionCountAlias: alias}
-}
-
 func OptionFinalFunc(finalFunc Identifier) Option {
 	return Option{optionFinalFunc: finalFunc}
 }
@@ -945,10 +931,9 @@ const (
 	optionClusteringOrder
 	optionColumns
 	optionCompactStorage
-	optionIf
-	optionCountAlias
 	optionDistinct
 	optionFinalFunc
+	optionIf
 	optionIfExists
 	optionIfNotExists
 	optionIndexIdentifier
