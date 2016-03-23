@@ -435,7 +435,7 @@ func QueryTableCreate(keyspace, table Identifier, columns map[Identifier]Type, s
 		ss = append(ss, "compact storage")
 	}
 
-	if vs, ok := options[optionOptions]; ok {
+	if vs, ok := options[optionWith]; ok {
 		for k, v := range vs.(map[Identifier]Term) {
 			ss = append(ss, fmt.Sprintf("%v = %v", k, v))
 		}
@@ -544,7 +544,7 @@ func QueryViewAlter(keyspace, view Identifier, o ...Option) string {
 		ss = append(ss, "compact storage")
 	}
 
-	if vs, ok := options[optionOptions]; ok {
+	if vs, ok := options[optionWith]; ok {
 		for k, v := range vs.(map[Identifier]Term) {
 			ss = append(ss, fmt.Sprintf("%v = %v", k, v))
 		}
@@ -600,7 +600,7 @@ func QueryViewCreate(keyspace, table, view Identifier, s []Selector, partition, 
 		ss = append(ss, "compact storage")
 	}
 
-	if vs, ok := options[optionOptions]; ok {
+	if vs, ok := options[optionWith]; ok {
 		for k, v := range vs.(map[Identifier]Term) {
 			ss = append(ss, fmt.Sprintf("%v = %v", k, v))
 		}

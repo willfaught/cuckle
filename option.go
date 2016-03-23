@@ -3,9 +3,16 @@ package cuckle
 type Option map[option]interface{}
 
 var (
-	OptionAllowFiltering Option = Option{optionAllowFiltering: nil}
-	OptionDistinct       Option = Option{optionDistinct: nil}
-	OptionIndexKeys      Option = Option{optionIndexKeys: nil}
+	OptionAllowFiltering  Option = Option{optionAllowFiltering: nil}
+	OptionCalled          Option = Option{optionCalled: nil}
+	OptionClusteringOrder Option = Option{optionClusteringOrder: nil}
+	OptionCompactStorage  Option = Option{optionCompactStorage: nil}
+	OptionDistinct        Option = Option{optionDistinct: nil}
+	OptionIfExists        Option = Option{optionIfExists: nil}
+	OptionIfNotExists     Option = Option{optionIfNotExists: nil}
+	OptionIndexKeys       Option = Option{optionIndexKeys: nil}
+	OptionJSON            Option = Option{optionJSON: nil}
+	OptionReplace         Option = Option{optionReplace: nil}
 )
 
 func OptionAliases(aliases map[Identifier]Identifier) Option {
@@ -36,6 +43,10 @@ func OptionLimit(limit int) Option {
 	return Option{optionLimit: limit}
 }
 
+func OptionOptions(options map[Term]Term) Option {
+	return Option{optionOptions: options}
+}
+
 func OptionOrder(i []Identifier, o []Order) Option {
 	return Option{optionOrderByColumns: i, optionOrderByDirections: o}
 }
@@ -44,8 +55,28 @@ func OptionSelectors(s ...Selector) Option {
 	return Option{optionSelectors: s}
 }
 
+func OptionTTL(ttl int64) Option {
+	return Option{optionTTL: ttl}
+}
+
+func OptionTimestamp(timestamp int64) Option {
+	return Option{optionTimestamp: timestamp}
+}
+
 func OptionTriggerIdentifier(trigger Identifier) Option {
 	return Option{optionTriggerIdentifier: trigger}
+}
+
+func OptionUsing(class string) Option {
+	return Option{optionUsing: class}
+}
+
+func OptionWhere(r ...Relation) Option {
+	return Option{optionWhere: r}
+}
+
+func OptionWith(options map[Identifier]Term) Option {
+	return Option{optionWith: options}
 }
 
 func combine(os []Option) Option {
@@ -68,7 +99,6 @@ const (
 	optionAssignments
 	optionCalled
 	optionClusteringOrder
-	optionColumns
 	optionCompactStorage
 	optionDistinct
 	optionFinalFunc
@@ -87,9 +117,8 @@ const (
 	optionSelectors
 	optionTTL
 	optionTimestamp
-	optionTrigger
 	optionTriggerIdentifier
 	optionUsing
-	optionValues
 	optionWhere
+	optionWith
 )
