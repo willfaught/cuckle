@@ -41,5 +41,5 @@ func ConstantStringEscaped(s string) Constant {
 
 // ConstantUUID returns a Constant for uuid.
 func ConstantUUID(uuid string) Constant {
-	return Constant(fmt.Sprint(uuid))
+	return Constant(uuid)
 }
