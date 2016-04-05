@@ -15,3 +15,17 @@ func TestConstantBoolean(t *testing.T) {
 		}
 	}
 }
+
+func TestConstantInteger(t *testing.T) {
+	for _, test := range []struct {
+		i int64
+		c Constant
+	}{
+		{0, "0"},
+		{1, "1"},
+	} {
+		if a := ConstantInteger(test.i); a != test.c {
+			t.Errorf("Actual constant %v, expected %v", a, test.c)
+		}
+	}
+}
