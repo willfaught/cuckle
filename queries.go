@@ -418,7 +418,7 @@ func QueryTableCreate(keyspace, table Identifier, columns map[Identifier]Type, s
 		key = fmt.Sprintf("(%v), %v", key, strings.Join(stringsFromIdentifiers(cluster), ", "))
 	}
 
-	ss = append(ss, fmt.Sprintf("primary key (%v)"), key)
+	ss = append(ss, fmt.Sprintf("primary key (%v)", key))
 	q = append(q, fmt.Sprintf("%v.%v(%v)", keyspace, table, strings.Join(ss, ", ")))
 	ss = nil
 
@@ -584,7 +584,7 @@ func QueryViewCreate(keyspace, table, view Identifier, s []Selector, partition, 
 		key = fmt.Sprintf("(%v), %v", key, strings.Join(stringsFromIdentifiers(cluster), ", "))
 	}
 
-	q = append(q, fmt.Sprintf("primary key (%v)"), key)
+	q = append(q, fmt.Sprintf("primary key (%v)", key))
 	ss = nil
 
 	if _, ok := options[optionClusteringOrder]; ok {
