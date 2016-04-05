@@ -29,3 +29,17 @@ func TestConstantInteger(t *testing.T) {
 		}
 	}
 }
+
+func TestConstantFloat(t *testing.T) {
+	for _, test := range []struct {
+		f float64
+		c Constant
+	}{
+		{0, "0"},
+		{1, "1"},
+	} {
+		if a := ConstantFloat(test.f); a != test.c {
+			t.Errorf("Actual constant %v, expected %v", a, test.c)
+		}
+	}
+}
