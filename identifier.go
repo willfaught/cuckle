@@ -27,8 +27,8 @@ const (
 
 // Functions that convert from blob to other types.
 const (
-	FuncBlobToAscii     Identifier = "blobtoascii"
-	FuncBlobToBigint    Identifier = "blobtobigint"
+	FuncBlobToASCII     Identifier = "blobtoascii"
+	FuncBlobToBigInt    Identifier = "blobtobigint"
 	FuncBlobToBoolean   Identifier = "blobtoboolean"
 	FuncBlobToCounter   Identifier = "blobtocounter"
 	FuncBlobToDate      Identifier = "blobtodate"
@@ -37,21 +37,21 @@ const (
 	FuncBlobToFloat     Identifier = "blobtofloat"
 	FuncBlobToInet      Identifier = "blobtoinet"
 	FuncBlobToInt       Identifier = "blobtoint"
-	FuncBlobToSmallint  Identifier = "blobtosmallint"
+	FuncBlobToSmallInt  Identifier = "blobtosmallint"
 	FuncBlobToText      Identifier = "blobtotext"
 	FuncBlobToTime      Identifier = "blobtotime"
+	FuncBlobToTimeUUID  Identifier = "blobtotimeuuid"
 	FuncBlobToTimestamp Identifier = "blobtotimestamp"
-	FuncBlobToTimeuuid  Identifier = "blobtotimeuuid"
-	FuncBlobToTinyint   Identifier = "blobtotinyint"
-	FuncBlobToUuid      Identifier = "blobtouuid"
-	FuncBlobToVarchar   Identifier = "blobtovarchar"
-	FuncBlobToVarint    Identifier = "blobtovarint"
+	FuncBlobToTinyInt   Identifier = "blobtotinyint"
+	FuncBlobToUUID      Identifier = "blobtouuid"
+	FuncBlobToVarChar   Identifier = "blobtovarchar"
+	FuncBlobToVarInt    Identifier = "blobtovarint"
 )
 
 // Functions that convert from other types to blob.
 const (
-	FuncAsciiToBlob     Identifier = "asciitoblob"
-	FuncBigintToBlob    Identifier = "biginttoblob"
+	FuncASCIIToBlob     Identifier = "asciitoblob"
+	FuncBigIntToBlob    Identifier = "biginttoblob"
 	FuncBooleanToBlob   Identifier = "booleantoblob"
 	FuncCounterToBlob   Identifier = "countertoblob"
 	FuncDateToBlob      Identifier = "datetoblob"
@@ -60,15 +60,15 @@ const (
 	FuncFloatToBlob     Identifier = "floattoblob"
 	FuncInetToBlob      Identifier = "inettoblob"
 	FuncIntToBlob       Identifier = "inttoblob"
-	FuncSmallintToBlob  Identifier = "smallinttoblob"
+	FuncSmallIntToBlob  Identifier = "smallinttoblob"
 	FuncTextToBlob      Identifier = "texttoblob"
 	FuncTimeToBlob      Identifier = "timetoblob"
+	FuncTimeUUIDToBlob  Identifier = "timeuuidtoblob"
 	FuncTimestampToBlob Identifier = "timestamptoblob"
-	FuncTimeuuidToBlob  Identifier = "timeuuidtoblob"
-	FuncTinyintToBlob   Identifier = "tinyinttoblob"
-	FuncUuidToBlob      Identifier = "uuidtoblob"
-	FuncVarcharToBlob   Identifier = "varchartoblob"
-	FuncVarintToBlob    Identifier = "varinttoblob"
+	FuncTinyIntToBlob   Identifier = "tinyinttoblob"
+	FuncUUIDToBlob      Identifier = "uuidtoblob"
+	FuncVarCharToBlob   Identifier = "varchartoblob"
+	FuncVarIntToBlob    Identifier = "varinttoblob"
 )
 
 // Keyspace properties.
