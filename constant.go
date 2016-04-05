@@ -1,6 +1,9 @@
 package cuckle
 
-import "fmt"
+import (
+	"encoding/hex"
+	"fmt"
+)
 
 type Constant string
 
@@ -16,8 +19,8 @@ func ConstantFloat(f float64) Constant {
 	return Constant(fmt.Sprint(f))
 }
 
-func ConstantHex(s string) Constant {
-	return Constant(fmt.Sprintf("0x%v", s))
+func ConstantHex(b []byte) Constant {
+	return Constant(fmt.Sprintf("0x%v", hex.EncodeToString(b)))
 }
 
 func ConstantString(s string) Constant {

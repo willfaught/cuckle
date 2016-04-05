@@ -1,6 +1,9 @@
 package cuckle
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestConstantBoolean(t *testing.T) {
 	for _, test := range []struct {
@@ -40,6 +43,21 @@ func TestConstantFloat(t *testing.T) {
 	} {
 		if a := ConstantFloat(test.f); a != test.c {
 			t.Errorf("Actual constant %v, expected %v", a, test.c)
+		}
+	}
+}
+
+func TestConstantHex(t *testing.T) {
+	for _, test := range []struct {
+		b []byte
+		c Constant
+	}{
+		{nil, ""},
+		{[]byte{1}, "01"},
+		{[]byte{1, 2}, "0102"},
+	} {
+		if a, e := ConstantHex(test.b), Constant(fmt.Sprintf("0x%v", test.c)); a != e {
+			t.Errorf("Actual constant %v, expected %v", a, e)
 		}
 	}
 }
