@@ -103,5 +103,5 @@ const (
 )
 
 func (i Identifier) String() string {
-	return fmt.Sprintf("%q", i)
+	return fmt.Sprintf("%q", string(i))
 }
