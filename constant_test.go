@@ -76,3 +76,20 @@ func TestConstantString(t *testing.T) {
 		}
 	}
 }
+
+func TestConstantStringEscaped(t *testing.T) {
+	for _, test := range []struct {
+		s string
+		c Constant
+	}{
+		{"", "$$$$"},
+		{"a", "$$a$$"},
+		{"ab", "$$ab$$"},
+		{"a\nb", "$$a\nb$$"},
+		{"'ab'", "$$'ab'$$"},
+	} {
+		if a := ConstantStringEscaped(test.s); a != test.c {
+			t.Errorf("Actual constant %v, expected %v", a, test.c)
+		}
+	}
+}
