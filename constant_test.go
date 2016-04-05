@@ -93,3 +93,17 @@ func TestConstantStringEscaped(t *testing.T) {
 		}
 	}
 }
+
+func TestConstantUUID(t *testing.T) {
+	for _, test := range []struct {
+		s string
+		c Constant
+	}{
+		{"", ""},
+		{"a", "a"},
+	} {
+		if a := ConstantUUID(test.s); a != test.c {
+			t.Errorf("Actual constant %v, expected %v", a, test.c)
+		}
+	}
+}
