@@ -61,3 +61,18 @@ func TestConstantHex(t *testing.T) {
 		}
 	}
 }
+
+func TestConstantString(t *testing.T) {
+	for _, test := range []struct {
+		s string
+		c Constant
+	}{
+		{"", "''"},
+		{"a", "'a'"},
+		{"ab", "'ab'"},
+	} {
+		if a := ConstantString(test.s); a != test.c {
+			t.Errorf("Actual constant %v, expected %v", a, test.c)
+		}
+	}
+}
