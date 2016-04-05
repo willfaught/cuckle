@@ -2,8 +2,10 @@ package cuckle
 
 import "fmt"
 
+// Identifier is a double-quoted identifier.
 type Identifier string
 
+// General functions.
 const (
 	FuncAvg             Identifier = "avg"
 	FuncDateOf          Identifier = "dateof"
@@ -23,6 +25,7 @@ const (
 	FuncUUID            Identifier = "uuid"
 )
 
+// Functions that convert from blob to other types.
 const (
 	FuncBlobToAscii     Identifier = "blobtoascii"
 	FuncBlobToBigint    Identifier = "blobtobigint"
@@ -45,6 +48,7 @@ const (
 	FuncBlobToVarint    Identifier = "blobtovarint"
 )
 
+// Functions that convert from other types to blob.
 const (
 	FuncAsciiToBlob     Identifier = "asciitoblob"
 	FuncBigintToBlob    Identifier = "biginttoblob"
@@ -67,11 +71,13 @@ const (
 	FuncVarintToBlob    Identifier = "varinttoblob"
 )
 
+// Keyspace properties.
 const (
 	KeyspaceDurableWrites Identifier = "durable_writes"
 	KeyspaceReplication   Identifier = "replication"
 )
 
+// Table properties.
 const (
 	TableBaseTimeSeconds              Identifier = "base_time_seconds"
 	TableBloomFilterFPChance          Identifier = "bloom_filter_fp_chance"
