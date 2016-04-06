@@ -32,9 +32,9 @@ func OptionFinalFunc(finalFunc Identifier) Option {
 	return Option{optionFinalFunc: finalFunc}
 }
 
-// OptionIndexIdentifier returns an Option for an index identifier.
-func OptionIndexIdentifier(index Identifier) Option {
-	return Option{optionIndexIdentifier: index}
+// OptionIndexName returns an Option for an index identifier.
+func OptionIndexName(index Identifier) Option {
+	return Option{optionIndexName: index}
 }
 
 // OptionInitCond returns an Option for a function initial condition.
@@ -117,7 +117,7 @@ const (
 	optionFinalFunc
 	optionIfExists
 	optionIfNotExists
-	optionIndexIdentifier
+	optionIndexName
 	optionIndexKeys
 	optionInitCond
 	optionJSON

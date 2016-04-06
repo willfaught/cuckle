@@ -112,7 +112,7 @@ func QueryIndexCreate(keyspace, table, column Identifier, o ...Option) string {
 		q = append(q, "if not exists")
 	}
 
-	if n, ok := options[optionIndexIdentifier]; ok {
+	if n, ok := options[optionIndexName]; ok {
 		q = append(q, fmt.Sprint(n))
 	}
 

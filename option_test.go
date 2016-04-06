@@ -59,11 +59,11 @@ func TestOptionFinalFunc(t *testing.T) {
 	}
 }
 
-func TestOptionIndexIdentifier(t *testing.T) {
+func TestOptionIndexName(t *testing.T) {
 	for _, test := range []Identifier{"", "a"} {
 		t.Log("Test:", test)
 
-		if a, e := OptionIndexIdentifier(test), (Option{optionIndexIdentifier: test}); !reflect.DeepEqual(a, e) {
+		if a, e := OptionIndexName(test), (Option{optionIndexName: test}); !reflect.DeepEqual(a, e) {
 			t.Errorf("Actual %v, expected %v", a, e)
 		}
 	}
