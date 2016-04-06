@@ -27,7 +27,7 @@ func OptionConditions(r ...Relation) Option {
 	return Option{optionConditions: r}
 }
 
-// OptionFinalFunc returns an Option for a final function.
+// OptionFinalFunc returns an Option for an aggregate final function.
 func OptionFinalFunc(finalFunc Identifier) Option {
 	return Option{optionFinalFunc: finalFunc}
 }
