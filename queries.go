@@ -466,7 +466,7 @@ func QueryTriggerCreate(keyspace, table, trigger Identifier, class string, o ...
 		q = append(q, "if not exists")
 	}
 
-	if t, ok := options[optionTriggerIdentifier]; ok {
+	if t, ok := options[optionTriggerName]; ok {
 		q = append(q, fmt.Sprint(t))
 	}
 
@@ -483,7 +483,7 @@ func QueryTriggerDrop(keyspace, table Identifier, o ...Option) string {
 		q = append(q, "if exists")
 	}
 
-	if t, ok := options[optionTriggerIdentifier]; ok {
+	if t, ok := options[optionTriggerName]; ok {
 		q = append(q, fmt.Sprint(t))
 	}
 

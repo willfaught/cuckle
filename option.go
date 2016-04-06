@@ -72,9 +72,9 @@ func OptionTimestamp(timestamp int64) Option {
 	return Option{optionTimestamp: timestamp}
 }
 
-// OptionTriggerIdentifier returns an Option for a trigger identifier.
-func OptionTriggerIdentifier(trigger Identifier) Option {
-	return Option{optionTriggerIdentifier: trigger}
+// OptionTriggerName returns an Option for a trigger identifier.
+func OptionTriggerName(trigger Identifier) Option {
+	return Option{optionTriggerName: trigger}
 }
 
 // OptionUsing returns an Option for a custom index class.
@@ -129,7 +129,7 @@ const (
 	optionSelectors
 	optionTTL
 	optionTimestamp
-	optionTriggerIdentifier
+	optionTriggerName
 	optionUsing
 	optionWhere
 	optionWith

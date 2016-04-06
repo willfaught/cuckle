@@ -146,11 +146,11 @@ func TestOptionTimestamp(t *testing.T) {
 	}
 }
 
-func TestOptionTriggerIdentifier(t *testing.T) {
+func TestOptionTriggerName(t *testing.T) {
 	for _, test := range []Identifier{"", "a"} {
 		t.Log("Test:", test)
 
-		if a, e := OptionTriggerIdentifier(test), (Option{optionTriggerIdentifier: test}); !reflect.DeepEqual(a, e) {
+		if a, e := OptionTriggerName(test), (Option{optionTriggerName: test}); !reflect.DeepEqual(a, e) {
 			t.Errorf("Actual %v, expected %v", a, e)
 		}
 	}
