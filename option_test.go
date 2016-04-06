@@ -39,16 +39,6 @@ func TestOptionAliases(t *testing.T) {
 	}
 }
 
-func TestOptionAssignments(t *testing.T) {
-	for _, test := range [][]Relation{nil, {}, {"a"}} {
-		t.Log("Test:", test)
-
-		if a, e := OptionAssignments(test...), (Option{optionAssignments: test}); !reflect.DeepEqual(a, e) {
-			t.Errorf("Actual %v, expected %v", a, e)
-		}
-	}
-}
-
 func TestOptionFinalFunc(t *testing.T) {
 	for _, test := range []Identifier{"", "a"} {
 		t.Log("Test:", test)

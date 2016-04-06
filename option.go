@@ -22,11 +22,6 @@ func OptionAliases(aliases map[Identifier]Identifier) Option {
 	return Option{optionAliases: aliases}
 }
 
-// OptionAssignments returns an Option for assignments.
-func OptionAssignments(r ...Relation) Option {
-	return Option{optionAssignments: r}
-}
-
 // OptionFinalFunc returns an Option for a final function.
 func OptionFinalFunc(finalFunc Identifier) Option {
 	return Option{optionFinalFunc: finalFunc}
@@ -114,7 +109,6 @@ type option int
 const (
 	optionAliases option = iota
 	optionAllowFiltering
-	optionAssignments
 	optionCalled
 	optionClusteringOrder
 	optionCompactStorage
