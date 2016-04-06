@@ -39,21 +39,21 @@ func TestOptionAliases(t *testing.T) {
 	}
 }
 
-func TestOptionFinalFunc(t *testing.T) {
-	for _, test := range []Identifier{"", "a"} {
+func TestOptionConditions(t *testing.T) {
+	for _, test := range [][]Relation{nil, {}, {"a"}} {
 		t.Log("Test:", test)
 
-		if a, e := OptionFinalFunc(test), (Option{optionFinalFunc: test}); !reflect.DeepEqual(a, e) {
+		if a, e := OptionConditions(test...), (Option{optionConditions: test}); !reflect.DeepEqual(a, e) {
 			t.Errorf("Actual %v, expected %v", a, e)
 		}
 	}
 }
 
-func TestOptionIf(t *testing.T) {
-	for _, test := range [][]Relation{nil, {}, {"a"}} {
+func TestOptionFinalFunc(t *testing.T) {
+	for _, test := range []Identifier{"", "a"} {
 		t.Log("Test:", test)
 
-		if a, e := OptionIf(test...), (Option{optionIf: test}); !reflect.DeepEqual(a, e) {
+		if a, e := OptionFinalFunc(test), (Option{optionFinalFunc: test}); !reflect.DeepEqual(a, e) {
 			t.Errorf("Actual %v, expected %v", a, e)
 		}
 	}

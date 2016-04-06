@@ -211,7 +211,7 @@ func QueryRowDelete(keyspace, table Identifier, where []Relation, o ...Option) s
 		q = append(q, "if exists")
 	}
 
-	if is, ok := options[optionIf]; ok {
+	if is, ok := options[optionConditions]; ok {
 		ss = nil
 
 		for _, i := range is.([]Relation) {
@@ -350,7 +350,7 @@ func QueryRowUpdate(keyspace, table Identifier, assign, where []Relation, o ...O
 
 	q = append(q, fmt.Sprintf("where %v", strings.Join(ss, " and ")))
 
-	if is, ok := options[optionIf]; ok {
+	if is, ok := options[optionConditions]; ok {
 		ss = nil
 
 		for _, i := range is.([]Relation) {
