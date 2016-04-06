@@ -13,6 +13,8 @@ func TestIdentifier(t *testing.T) {
 		{"", `""`},
 		{"a", `"a"`},
 	} {
+		t.Log("Test:", test)
+
 		if a := fmt.Sprint(Identifier(test.s)); a != test.e {
 			t.Errorf("Actual constant %v, expected %v", a, test.e)
 		}

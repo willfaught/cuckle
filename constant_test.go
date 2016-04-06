@@ -13,6 +13,8 @@ func TestConstantBoolean(t *testing.T) {
 		{false, "false"},
 		{true, "true"},
 	} {
+		t.Log("Test:", test)
+
 		if a := ConstantBoolean(test.b); a != test.c {
 			t.Errorf("Actual constant %v, expected %v", a, test.c)
 		}
@@ -27,6 +29,8 @@ func TestConstantInteger(t *testing.T) {
 		{0, "0"},
 		{1, "1"},
 	} {
+		t.Log("Test:", test)
+
 		if a := ConstantInteger(test.i); a != test.c {
 			t.Errorf("Actual constant %v, expected %v", a, test.c)
 		}
@@ -41,6 +45,8 @@ func TestConstantFloat(t *testing.T) {
 		{0, "0"},
 		{1, "1"},
 	} {
+		t.Log("Test:", test)
+
 		if a := ConstantFloat(test.f); a != test.c {
 			t.Errorf("Actual constant %v, expected %v", a, test.c)
 		}
@@ -56,6 +62,8 @@ func TestConstantHex(t *testing.T) {
 		{[]byte{1}, "01"},
 		{[]byte{1, 2}, "0102"},
 	} {
+		t.Log("Test:", test)
+
 		if a, e := ConstantHex(test.b), Constant(fmt.Sprintf("0x%v", test.c)); a != e {
 			t.Errorf("Actual constant %v, expected %v", a, e)
 		}
@@ -71,6 +79,8 @@ func TestConstantString(t *testing.T) {
 		{"a", "'a'"},
 		{"ab", "'ab'"},
 	} {
+		t.Log("Test:", test)
+
 		if a := ConstantString(test.s); a != test.c {
 			t.Errorf("Actual constant %v, expected %v", a, test.c)
 		}
@@ -88,6 +98,8 @@ func TestConstantStringEscaped(t *testing.T) {
 		{"a\nb", "$$a\nb$$"},
 		{"'ab'", "$$'ab'$$"},
 	} {
+		t.Log("Test:", test)
+
 		if a := ConstantStringEscaped(test.s); a != test.c {
 			t.Errorf("Actual constant %v, expected %v", a, test.c)
 		}
@@ -102,6 +114,8 @@ func TestConstantUUID(t *testing.T) {
 		{"", ""},
 		{"a", "a"},
 	} {
+		t.Log("Test:", test)
+
 		if a := ConstantUUID(test.s); a != test.c {
 			t.Errorf("Actual constant %v, expected %v", a, test.c)
 		}
