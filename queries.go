@@ -99,7 +99,14 @@ func QueryFunctionDrop(keyspace, function Identifier, parameters []Type, o ...Op
 
 func QueryIndexCreate(keyspace, table, column Identifier, o ...Option) string {
 	var options = combine(o)
-	var q = []string{"create index"}
+	var q = []string{"create"}
+	var class, custom = options[optionUsing]
+
+	if custom {
+		q = append(q, "custom")
+	}
+
+	q = append(q, "index")
 
 	if _, ok := options[optionIfNotExists]; ok {
 		q = append(q, "if not exists")
@@ -119,8 +126,8 @@ func QueryIndexCreate(keyspace, table, column Identifier, o ...Option) string {
 
 	q = append(q, fmt.Sprintf("on %v.%v(%v)", keyspace, table, id))
 
-	if u, ok := options[optionUsing]; ok {
-		q = append(q, "using", string(ConstantString(u.(string))))
+	if custom {
+		q = append(q, "using", string(ConstantString(class.(string))))
 
 		if o, ok := options[optionOptions]; ok {
 			q = append(q, "with options", string(TermMap(o.(map[Term]Term))))
