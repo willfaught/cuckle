@@ -37,7 +37,7 @@ func OptionIndexName(index Identifier) Option {
 	return Option{optionIndexName: index}
 }
 
-// OptionInitCond returns an Option for a function initial condition.
+// OptionInitCond returns an Option for an aggregate initial condition.
 func OptionInitCond(initCond Term) Option {
 	return Option{optionInitCond: initCond}
 }
