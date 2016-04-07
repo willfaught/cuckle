@@ -73,7 +73,8 @@ func OptionName(name Identifier) Option {
 	return Option{optionName: name}
 }
 
-// OptionOrder returns an Option for ordering result rows by columns and directions.
+// OptionOrder returns an Option for ordering result rows by columns and
+// directions. There must be the same number of columns and directions.
 func OptionOrder(i []Identifier, o []Order) Option {
 	return Option{optionOrderByColumns: i, optionOrderByDirections: o}
 }
