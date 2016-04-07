@@ -5,16 +5,35 @@ type Option map[option]interface{}
 
 // Options with no parameters.
 var (
-	OptionAllowFiltering  Option = Option{optionAllowFiltering: nil}
-	OptionCalled          Option = Option{optionCalled: nil}
+	// OptionAllowFiltering allows filtering result rows.
+	OptionAllowFiltering Option = Option{optionAllowFiltering: nil}
+
+	// OptionCalled allows functions to be called with null input.
+	OptionCalled Option = Option{optionCalled: nil}
+
+	// OptionClusteringOrder is the ordering of rows on disk.
 	OptionClusteringOrder Option = Option{optionClusteringOrder: nil}
-	OptionCompactStorage  Option = Option{optionCompactStorage: nil}
-	OptionDistinct        Option = Option{optionDistinct: nil}
-	OptionIfExists        Option = Option{optionIfExists: nil}
-	OptionIfNotExists     Option = Option{optionIfNotExists: nil}
-	OptionIndexKeys       Option = Option{optionIndexKeys: nil}
-	OptionJSON            Option = Option{optionJSON: nil}
-	OptionReplace         Option = Option{optionReplace: nil}
+
+	// OptionCompactStorage uses a more compact but less flexible layout for tables.
+	OptionCompactStorage Option = Option{optionCompactStorage: nil}
+
+	// OptionDistinct removes rows with duplicate partition keys from result rows.
+	OptionDistinct Option = Option{optionDistinct: nil}
+
+	// OptionIfExists does not execute create queries for existing primary keys.
+	OptionIfExists Option = Option{optionIfExists: nil}
+
+	// OptionIfNotExists does not execute drop queries for invalid primary keys.
+	OptionIfNotExists Option = Option{optionIfNotExists: nil}
+
+	// OptionIndexKeys creates an index on map keys.
+	OptionIndexKeys Option = Option{optionIndexKeys: nil}
+
+	// OptionJSON uses JSON for insert and select queries.
+	OptionJSON Option = Option{optionJSON: nil}
+
+	// OptionReplace replaces any existing aggregates and functions.
+	OptionReplace Option = Option{optionReplace: nil}
 )
 
 // OptionAliases returns an Option for column aliases.
