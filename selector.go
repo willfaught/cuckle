@@ -34,8 +34,8 @@ func SelectorFunc(function Identifier, arguments ...Selector) Selector {
 }
 
 // SelectorIdentifier returns a Selector for selecting a column.
-func SelectorIdentifier(i Identifier) Selector {
-	return Selector(fmt.Sprint(i))
+func SelectorIdentifier(column Identifier) Selector {
+	return Selector(fmt.Sprint(column))
 }
 
 // SelectorIndex returns a Selector for indexing a column.
