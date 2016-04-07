@@ -33,7 +33,7 @@ func SelectorFunc(function Identifier, arguments ...Selector) Selector {
 	return Selector(fmt.Sprintf("%v(%v)", function, strings.Join(ss, ", ")))
 }
 
-// SelectorIdentifier returns a Selector for selecting a column.
+// SelectorIdentifier returns a Selector for a column.
 func SelectorIdentifier(column Identifier) Selector {
 	return Selector(fmt.Sprint(column))
 }
