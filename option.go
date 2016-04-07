@@ -38,14 +38,14 @@ func OptionAliases(aliases map[Identifier]Identifier) Option {
 	return Option{optionAliases: aliases}
 }
 
-// OptionConditions returns an Option for lightweight transaction conditions.
-func OptionConditions(r ...Relation) Option {
-	return Option{optionConditions: r}
-}
-
 // OptionFinalFunc returns an Option for an aggregate final function.
 func OptionFinalFunc(finalFunc Identifier) Option {
 	return Option{optionFinalFunc: finalFunc}
+}
+
+// OptionIf returns an Option for lightweight transaction conditions.
+func OptionIf(r ...Relation) Option {
+	return Option{optionIf: r}
 }
 
 // OptionIndexName returns an Option for an index identifier.
@@ -128,9 +128,9 @@ const (
 	optionClass
 	optionClusteringOrder
 	optionCompactStorage
-	optionConditions
 	optionDistinct
 	optionFinalFunc
+	optionIf
 	optionIfExists
 	optionIfNotExists
 	optionIndexName
