@@ -56,10 +56,9 @@ func TermMap(m map[Term]Term) Term {
 	return Term(fmt.Sprintf("{%v}", strings.Join(ss, ", ")))
 }
 
-// TermOperation returns a Term for an operation with an operator and two
-// operands.
-func TermOperation(left Term, o Operator, right Term) Term {
-	return Term(fmt.Sprintf("%v %v %v", left, o, right))
+// TermRelation returns a Term for a Relation.
+func TermRelation(r Relation) Term {
+	return Term(r)
 }
 
 // TermSet returns a Term for a set.
