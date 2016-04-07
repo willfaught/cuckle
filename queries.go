@@ -64,7 +64,7 @@ func QueryBatch(counter bool, timestamp int64, queries []string) string {
 	return strings.Join(q, " ")
 }
 
-func QueryFunctionCreate(keyspace, function Identifier, parameters []Type, returns Type, language string, body string, o ...Option) string {
+func QueryFunctionCreate(keyspace, function Identifier, parameters []Type, null bool, returns Type, language string, body string, o ...Option) string {
 	var options = combine(o)
 	var q []string
 
@@ -82,7 +82,7 @@ func QueryFunctionCreate(keyspace, function Identifier, parameters []Type, retur
 
 	q = append(q, fmt.Sprintf("%v.%v(%v)", keyspace, function, strings.Join(stringsFromTypes(parameters), ", ")))
 
-	if _, ok := options[optionCalled]; ok {
+	if null {
 		q = append(q, "called")
 	} else {
 		q = append(q, "returns null")

@@ -11,7 +11,6 @@ func TestOptionVars(t *testing.T) {
 		e option
 	}{
 		{OptionAllowFiltering, optionAllowFiltering},
-		{OptionCalled, optionCalled},
 		{OptionClusteringOrder, optionClusteringOrder},
 		{OptionCompactStorage, optionCompactStorage},
 		{OptionDistinct, optionDistinct},

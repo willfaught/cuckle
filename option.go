@@ -8,9 +8,6 @@ var (
 	// OptionAllowFiltering allows filtering result rows.
 	OptionAllowFiltering Option = Option{optionAllowFiltering: nil}
 
-	// OptionCalled allows functions to be called with null input.
-	OptionCalled Option = Option{optionCalled: nil}
-
 	// OptionClusteringOrder is the ordering of rows on disk.
 	OptionClusteringOrder Option = Option{optionClusteringOrder: nil}
 
@@ -128,7 +125,6 @@ type option int
 const (
 	optionAliases option = iota
 	optionAllowFiltering
-	optionCalled
 	optionClusteringOrder
 	optionCompactStorage
 	optionConditions
