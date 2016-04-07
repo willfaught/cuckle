@@ -25,6 +25,16 @@ func TestOptionClass(t *testing.T) {
 	}
 }
 
+func TestOptionClassOptions(t *testing.T) {
+	for _, test := range []map[Term]Term{nil, {"a": "b"}} {
+		t.Log("Test:", test)
+
+		if a, e := OptionClassOptions(test), (Option{optionClassOptions: test}); !reflect.DeepEqual(a, e) {
+			t.Errorf("Actual %v, expected %v", a, e)
+		}
+	}
+}
+
 func TestOptionFinalFunc(t *testing.T) {
 	for _, test := range []Identifier{"", "a"} {
 		t.Log("Test:", test)
@@ -70,16 +80,6 @@ func TestOptionName(t *testing.T) {
 		t.Log("Test:", test)
 
 		if a, e := OptionName(test), (Option{optionName: test}); !reflect.DeepEqual(a, e) {
-			t.Errorf("Actual %v, expected %v", a, e)
-		}
-	}
-}
-
-func TestOptionOptions(t *testing.T) {
-	for _, test := range []map[Term]Term{nil, {"a": "b"}} {
-		t.Log("Test:", test)
-
-		if a, e := OptionOptions(test), (Option{optionOptions: test}); !reflect.DeepEqual(a, e) {
 			t.Errorf("Actual %v, expected %v", a, e)
 		}
 	}

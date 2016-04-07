@@ -43,6 +43,11 @@ func OptionClass(class string) Option {
 	return Option{optionClass: class}
 }
 
+// OptionClassOptions returns an Option for arbitrary Term key-value pairs.
+func OptionClassOptions(options map[Term]Term) Option {
+	return Option{optionClassOptions: options}
+}
+
 // OptionFinalFunc returns an Option for an aggregate final function.
 func OptionFinalFunc(finalFunc Identifier) Option {
 	return Option{optionFinalFunc: finalFunc}
@@ -66,11 +71,6 @@ func OptionLimit(limit int) Option {
 // OptionName returns an Option for a name.
 func OptionName(name Identifier) Option {
 	return Option{optionName: name}
-}
-
-// OptionOptions returns an Option for arbitrary Term key-value pairs.
-func OptionOptions(options map[Term]Term) Option {
-	return Option{optionOptions: options}
 }
 
 // OptionOrder returns an Option for ordering result rows by columns and directions.
@@ -133,7 +133,7 @@ const (
 	optionJSON
 	optionLimit
 	optionName
-	optionOptions
+	optionClassOptions
 	optionOrderByColumns
 	optionOrderByDirections
 	optionReplace

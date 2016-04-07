@@ -129,7 +129,7 @@ func QueryIndexCreate(keyspace, table, column Identifier, o ...Option) string {
 	if custom {
 		q = append(q, "using", string(ConstantString(class.(string))))
 
-		if o, ok := options[optionOptions]; ok {
+		if o, ok := options[optionClassOptions]; ok {
 			q = append(q, "with options", string(TermMap(o.(map[Term]Term))))
 		}
 	}
