@@ -78,6 +78,11 @@ func OptionOrder(i []Identifier, o []Order) Option {
 	return Option{optionOrderByColumns: i, optionOrderByDirections: o}
 }
 
+// OptionProperties is key-value pairs.
+func OptionProperties(options map[Identifier]Term) Option {
+	return Option{optionProperties: options}
+}
+
 // OptionSelectors returns an Option for selecting column values.
 func OptionSelectors(s ...Selector) Option {
 	return Option{optionSelectors: s}
@@ -96,11 +101,6 @@ func OptionTimestamp(timestamp int64) Option {
 // OptionWhere returns an Option for conditions.
 func OptionWhere(r ...Relation) Option {
 	return Option{optionWhere: r}
-}
-
-// OptionWith is key-value pairs.
-func OptionWith(options map[Identifier]Term) Option {
-	return Option{optionWith: options}
 }
 
 func combine(os []Option) Option {
@@ -136,10 +136,10 @@ const (
 	optionClassOptions
 	optionOrderByColumns
 	optionOrderByDirections
+	optionProperties
 	optionReplace
 	optionSelectors
 	optionTTL
 	optionTimestamp
 	optionWhere
-	optionWith
 )

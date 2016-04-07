@@ -102,6 +102,20 @@ func TestOptionOrder(t *testing.T) {
 	}
 }
 
+func TestOptionProperties(t *testing.T) {
+	for _, test := range []map[Identifier]Term{
+		nil,
+		{"": ""},
+		{"a": "b"},
+	} {
+		t.Log("Test:", test)
+
+		if a, e := OptionProperties(test), (Option{optionProperties: test}); !reflect.DeepEqual(a, e) {
+			t.Errorf("Actual %v, expected %v", a, e)
+		}
+	}
+}
+
 func TestOptionSelectors(t *testing.T) {
 	for _, test := range [][]Selector{nil, {}, {"a"}} {
 		t.Log("Test:", test)
@@ -160,20 +174,6 @@ func TestOptionWhere(t *testing.T) {
 		t.Log("Test:", test)
 
 		if a, e := OptionWhere(test...), (Option{optionWhere: test}); !reflect.DeepEqual(a, e) {
-			t.Errorf("Actual %v, expected %v", a, e)
-		}
-	}
-}
-
-func TestOptionWith(t *testing.T) {
-	for _, test := range []map[Identifier]Term{
-		nil,
-		{"": ""},
-		{"a": "b"},
-	} {
-		t.Log("Test:", test)
-
-		if a, e := OptionWith(test), (Option{optionWith: test}); !reflect.DeepEqual(a, e) {
 			t.Errorf("Actual %v, expected %v", a, e)
 		}
 	}
