@@ -43,7 +43,7 @@ func OptionClass(class string) Option {
 	return Option{optionClass: class}
 }
 
-// OptionClassOptions returns an Option for arbitrary Term key-value pairs.
+// OptionClassOptions returns an Option for custom index class options.
 func OptionClassOptions(options map[Term]Term) Option {
 	return Option{optionClassOptions: options}
 }
