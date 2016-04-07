@@ -78,7 +78,7 @@ func OptionOrder(i []Identifier, o []Order) Option {
 	return Option{optionOrderByColumns: i, optionOrderByDirections: o}
 }
 
-// OptionProperties is key-value pairs.
+// OptionProperties returns an Option for mapping property keys to values.
 func OptionProperties(options map[Identifier]Term) Option {
 	return Option{optionProperties: options}
 }
