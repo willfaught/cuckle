@@ -17,7 +17,7 @@ const (
 	SelectorCount Selector = "count(*)"
 )
 
-// SelectorAlias returns a Selector for aliasing s as alias.
+// SelectorAlias returns a Selector for aliasing a Selector.
 func SelectorAlias(s Selector, alias Identifier) Selector {
 	return Selector(fmt.Sprintf("%v as %v", s, alias))
 }
