@@ -93,7 +93,7 @@ func OptionTimestamp(timestamp int64) Option {
 	return Option{optionTimestamp: timestamp}
 }
 
-// OptionWhere returns an Option for criteria relations.
+// OptionWhere returns an Option for conditions.
 func OptionWhere(r ...Relation) Option {
 	return Option{optionWhere: r}
 }
