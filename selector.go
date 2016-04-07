@@ -39,8 +39,8 @@ func SelectorIdentifier(column Identifier) Selector {
 }
 
 // SelectorIndex returns a Selector for indexing a column.
-func SelectorIndex(i Identifier, t Term) Selector {
-	return Selector(fmt.Sprintf("%v[%v]", i, t))
+func SelectorIndex(column Identifier, index Term) Selector {
+	return Selector(fmt.Sprintf("%v[%v]", column, index))
 }
 
 // SelectorTTL returns a Selector for the time-to-live of a column.
