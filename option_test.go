@@ -68,16 +68,6 @@ func TestOptionIf(t *testing.T) {
 	}
 }
 
-func TestOptionIndexName(t *testing.T) {
-	for _, test := range []Identifier{"", "a"} {
-		t.Log("Test:", test)
-
-		if a, e := OptionIndexName(test), (Option{optionIndexName: test}); !reflect.DeepEqual(a, e) {
-			t.Errorf("Actual %v, expected %v", a, e)
-		}
-	}
-}
-
 func TestOptionInitCond(t *testing.T) {
 	for _, test := range []Term{"", "a"} {
 		t.Log("Test:", test)
@@ -93,6 +83,16 @@ func TestOptionLimit(t *testing.T) {
 		t.Log("Test:", test)
 
 		if a, e := OptionLimit(test), (Option{optionLimit: test}); !reflect.DeepEqual(a, e) {
+			t.Errorf("Actual %v, expected %v", a, e)
+		}
+	}
+}
+
+func TestOptionName(t *testing.T) {
+	for _, test := range []Identifier{"", "a"} {
+		t.Log("Test:", test)
+
+		if a, e := OptionName(test), (Option{optionName: test}); !reflect.DeepEqual(a, e) {
 			t.Errorf("Actual %v, expected %v", a, e)
 		}
 	}
@@ -150,16 +150,6 @@ func TestOptionTimestamp(t *testing.T) {
 		t.Log("Test:", test)
 
 		if a, e := OptionTimestamp(test), (Option{optionTimestamp: test}); !reflect.DeepEqual(a, e) {
-			t.Errorf("Actual %v, expected %v", a, e)
-		}
-	}
-}
-
-func TestOptionTriggerName(t *testing.T) {
-	for _, test := range []Identifier{"", "a"} {
-		t.Log("Test:", test)
-
-		if a, e := OptionTriggerName(test), (Option{optionTriggerName: test}); !reflect.DeepEqual(a, e) {
 			t.Errorf("Actual %v, expected %v", a, e)
 		}
 	}

@@ -53,11 +53,6 @@ func OptionIf(r ...Relation) Option {
 	return Option{optionIf: r}
 }
 
-// OptionIndexName returns an Option for an index identifier.
-func OptionIndexName(index Identifier) Option {
-	return Option{optionIndexName: index}
-}
-
 // OptionInitCond returns an Option for an aggregate initial condition.
 func OptionInitCond(initCond Term) Option {
 	return Option{optionInitCond: initCond}
@@ -66,6 +61,11 @@ func OptionInitCond(initCond Term) Option {
 // OptionLimit returns an Option for a result row limit.
 func OptionLimit(limit int) Option {
 	return Option{optionLimit: limit}
+}
+
+// OptionName returns an Option for a name.
+func OptionName(name Identifier) Option {
+	return Option{optionName: name}
 }
 
 // OptionOptions returns an Option for arbitrary Term key-value pairs.
@@ -91,11 +91,6 @@ func OptionTTL(ttl int64) Option {
 // OptionTimestamp returns an Option for insert and update timestamps.
 func OptionTimestamp(timestamp int64) Option {
 	return Option{optionTimestamp: timestamp}
-}
-
-// OptionTriggerName returns an Option for a trigger identifier.
-func OptionTriggerName(trigger Identifier) Option {
-	return Option{optionTriggerName: trigger}
 }
 
 // OptionWhere returns an Option for criteria relations.
@@ -133,11 +128,11 @@ const (
 	optionIf
 	optionIfExists
 	optionIfNotExists
-	optionIndexName
 	optionIndexKeys
 	optionInitCond
 	optionJSON
 	optionLimit
+	optionName
 	optionOptions
 	optionOrderByColumns
 	optionOrderByDirections
@@ -145,7 +140,6 @@ const (
 	optionSelectors
 	optionTTL
 	optionTimestamp
-	optionTriggerName
 	optionWhere
 	optionWith
 )
