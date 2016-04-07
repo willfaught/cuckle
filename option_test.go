@@ -5,29 +5,6 @@ import (
 	"testing"
 )
 
-func TestOptionVars(t *testing.T) {
-	for _, test := range []struct {
-		a Option
-		e option
-	}{
-		{OptionAllowFiltering, optionAllowFiltering},
-		{OptionClusteringOrder, optionClusteringOrder},
-		{OptionCompactStorage, optionCompactStorage},
-		{OptionDistinct, optionDistinct},
-		{OptionIfExists, optionIfExists},
-		{OptionIfNotExists, optionIfNotExists},
-		{OptionIndexKeys, optionIndexKeys},
-		{OptionJSON, optionJSON},
-		{OptionReplace, optionReplace},
-	} {
-		t.Log("Test:", test)
-
-		if e := (Option{test.e: nil}); !reflect.DeepEqual(test.a, e) {
-			t.Errorf("Actual %v, expected %v", test.a, e)
-		}
-	}
-}
-
 func TestOptionAliases(t *testing.T) {
 	for _, test := range []map[Identifier]Identifier{nil, {}, {"a": "b"}} {
 		t.Log("Test:", test)
@@ -151,6 +128,29 @@ func TestOptionTimestamp(t *testing.T) {
 
 		if a, e := OptionTimestamp(test), (Option{optionTimestamp: test}); !reflect.DeepEqual(a, e) {
 			t.Errorf("Actual %v, expected %v", a, e)
+		}
+	}
+}
+
+func TestOptionVars(t *testing.T) {
+	for _, test := range []struct {
+		a Option
+		e option
+	}{
+		{OptionAllowFiltering, optionAllowFiltering},
+		{OptionClusteringOrder, optionClusteringOrder},
+		{OptionCompactStorage, optionCompactStorage},
+		{OptionDistinct, optionDistinct},
+		{OptionIfExists, optionIfExists},
+		{OptionIfNotExists, optionIfNotExists},
+		{OptionIndexKeys, optionIndexKeys},
+		{OptionJSON, optionJSON},
+		{OptionReplace, optionReplace},
+	} {
+		t.Log("Test:", test)
+
+		if e := (Option{test.e: nil}); !reflect.DeepEqual(test.a, e) {
+			t.Errorf("Actual %v, expected %v", test.a, e)
 		}
 	}
 }
