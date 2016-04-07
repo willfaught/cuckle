@@ -155,11 +155,11 @@ func TestOptionTriggerName(t *testing.T) {
 	}
 }
 
-func TestOptionUsing(t *testing.T) {
+func TestOptionClass(t *testing.T) {
 	for _, test := range []string{"", "a"} {
 		t.Log("Test:", test)
 
-		if a, e := OptionUsing(test), (Option{optionUsing: test}); !reflect.DeepEqual(a, e) {
+		if a, e := OptionClass(test), (Option{optionClass: test}); !reflect.DeepEqual(a, e) {
 			t.Errorf("Actual %v, expected %v", a, e)
 		}
 	}

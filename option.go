@@ -93,9 +93,9 @@ func OptionTriggerName(trigger Identifier) Option {
 	return Option{optionTriggerName: trigger}
 }
 
-// OptionUsing returns an Option for a custom index class.
-func OptionUsing(class string) Option {
-	return Option{optionUsing: class}
+// OptionClass returns an Option for a custom index class.
+func OptionClass(class string) Option {
+	return Option{optionClass: class}
 }
 
 // OptionWhere returns an Option for criteria relations.
@@ -125,6 +125,7 @@ type option int
 const (
 	optionAliases option = iota
 	optionAllowFiltering
+	optionClass
 	optionClusteringOrder
 	optionCompactStorage
 	optionConditions
@@ -145,7 +146,6 @@ const (
 	optionTTL
 	optionTimestamp
 	optionTriggerName
-	optionUsing
 	optionWhere
 	optionWith
 )

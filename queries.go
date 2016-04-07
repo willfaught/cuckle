@@ -100,7 +100,7 @@ func QueryFunctionDrop(keyspace, function Identifier, parameters []Type, o ...Op
 func QueryIndexCreate(keyspace, table, column Identifier, o ...Option) string {
 	var options = combine(o)
 	var q = []string{"create"}
-	var class, custom = options[optionUsing]
+	var class, custom = options[optionClass]
 
 	if custom {
 		q = append(q, "custom")
