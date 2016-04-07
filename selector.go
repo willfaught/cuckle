@@ -22,7 +22,7 @@ func SelectorAlias(s Selector, alias Identifier) Selector {
 	return Selector(fmt.Sprintf("%v as %v", s, alias))
 }
 
-// SelectorFunc returns a Selector for calling function with argumnets.
+// SelectorFunc returns a Selector for calling a function with argumnets.
 func SelectorFunc(function Identifier, arguments ...Selector) Selector {
 	var ss []string
 
