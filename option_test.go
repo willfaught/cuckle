@@ -38,6 +38,16 @@ func TestOptionAliases(t *testing.T) {
 	}
 }
 
+func TestOptionClass(t *testing.T) {
+	for _, test := range []string{"", "a"} {
+		t.Log("Test:", test)
+
+		if a, e := OptionClass(test), (Option{optionClass: test}); !reflect.DeepEqual(a, e) {
+			t.Errorf("Actual %v, expected %v", a, e)
+		}
+	}
+}
+
 func TestOptionFinalFunc(t *testing.T) {
 	for _, test := range []Identifier{"", "a"} {
 		t.Log("Test:", test)
@@ -150,16 +160,6 @@ func TestOptionTriggerName(t *testing.T) {
 		t.Log("Test:", test)
 
 		if a, e := OptionTriggerName(test), (Option{optionTriggerName: test}); !reflect.DeepEqual(a, e) {
-			t.Errorf("Actual %v, expected %v", a, e)
-		}
-	}
-}
-
-func TestOptionClass(t *testing.T) {
-	for _, test := range []string{"", "a"} {
-		t.Log("Test:", test)
-
-		if a, e := OptionClass(test), (Option{optionClass: test}); !reflect.DeepEqual(a, e) {
 			t.Errorf("Actual %v, expected %v", a, e)
 		}
 	}

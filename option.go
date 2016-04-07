@@ -38,6 +38,11 @@ func OptionAliases(aliases map[Identifier]Identifier) Option {
 	return Option{optionAliases: aliases}
 }
 
+// OptionClass returns an Option for a custom index class.
+func OptionClass(class string) Option {
+	return Option{optionClass: class}
+}
+
 // OptionFinalFunc returns an Option for an aggregate final function.
 func OptionFinalFunc(finalFunc Identifier) Option {
 	return Option{optionFinalFunc: finalFunc}
@@ -91,11 +96,6 @@ func OptionTimestamp(timestamp int64) Option {
 // OptionTriggerName returns an Option for a trigger identifier.
 func OptionTriggerName(trigger Identifier) Option {
 	return Option{optionTriggerName: trigger}
-}
-
-// OptionClass returns an Option for a custom index class.
-func OptionClass(class string) Option {
-	return Option{optionClass: class}
 }
 
 // OptionWhere returns an Option for criteria relations.
