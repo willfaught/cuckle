@@ -6,6 +6,6 @@ import "fmt"
 type Relation string
 
 // NewRelation returns a new Relation for left, o, and right.
-func NewRelation(left Term, o Operator, right Term) Relation {
+func NewRelation(o Operator, left, right Term) Relation {
 	return Relation(fmt.Sprintf("%v %v %v", left, o, right))
 }
