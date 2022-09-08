@@ -624,7 +624,7 @@ func queryDrop(kind string, id string, o []Option) string {
 	var q = []string{"drop", kind}
 
 	if _, ok := options[optionIfExists]; ok {
-		q = append(q, string(optionIfExists))
+		q = append(q, "if exists")
 	}
 
 	q = append(q, id)
