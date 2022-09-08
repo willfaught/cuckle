@@ -2,6 +2,7 @@ package cuckle
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -48,9 +49,16 @@ func TermList(t ...Term) Term {
 // TermMap returns a Term for a map.
 func TermMap(m map[Term]Term) Term {
 	var ss []string
+	var ks = make([]string, 0, len(m))
 
-	for k, v := range m {
-		ss = append(ss, fmt.Sprintf("%v: %v", k, v))
+	for k := range m {
+		ks = append(ks, string(k))
+	}
+
+	sort.Strings(ks)
+
+	for _, k := range ks {
+		ss = append(ss, fmt.Sprintf("%v: %v", k, m[Term(k)]))
 	}
 
 	return Term(fmt.Sprintf("{%v}", strings.Join(ss, ", ")))
