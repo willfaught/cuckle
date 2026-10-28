@@ -1,7 +1,9 @@
 package cuckle
 
+import "maps"
+
 // Option stores optional query parameters.
-type Option map[option]interface{}
+type Option map[option]any
 
 // Options with no parameters.
 var (
@@ -108,9 +110,7 @@ func combine(os []Option) Option {
 	var combined = Option{}
 
 	for _, o := range os {
-		for k, v := range o {
-			combined[k] = v
-		}
+		maps.Copy(combined, o)
 	}
 
 	return combined
